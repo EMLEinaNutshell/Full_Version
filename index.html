@@ -34,7 +34,25 @@
     --topbar-h: 54px;
   }
 
-  * { box-sizing: border-box; }
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Prevent Chrome Android Font Boosting / Text Autosizing in Desktop Site Mode */
+  p, div, span, li, td, th, label, blockquote, a, b, strong, em {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    max-height: 999999px;
+  }
 
   body {
     margin: 0;
@@ -492,22 +510,36 @@
     border-radius: 8px;
     padding: 12px 14px;
     text-align: right;
+    max-height: 999999px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .spd-target-kicker {
     font-size: 12px;
     font-weight: 700;
     color: var(--text-muted);
+    max-height: 999999px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   .spd-target-val {
     font-size: 20px;
     font-weight: 900;
     color: var(--teal);
     margin: 4px 0 2px 0;
+    max-height: 999999px;
+    white-space: nowrap;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   .spd-target-sub {
     font-size: 12px;
     color: var(--text-secondary);
     font-weight: 600;
+    max-height: 999999px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   .spd-merged-analysis-strip {
     background: #f8fafc;
