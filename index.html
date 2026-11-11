@@ -72,14 +72,16 @@
     left: 0;
     right: 0;
     z-index: 1100;
-    height: var(--topbar-h);
+    min-height: 54px;
+    height: auto;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    padding: 0 18px;
-    gap: 10px;
+    padding: 6px 18px;
+    gap: 6px 10px;
   }
 
   .topbar-left {
@@ -87,10 +89,13 @@
     align-items: center;
     gap: 10px;
     min-width: 0;
-    flex: 1;
+    flex: 1 1 auto;
+    order: 1;
   }
 
   .sidebar-toggle-btn {
+    position: relative;
+    z-index: 5;
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text-secondary);
@@ -102,6 +107,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
     transition: all 0.15s;
     flex-shrink: 0;
   }
@@ -124,6 +130,7 @@
     border-radius: 7px;
     cursor: pointer;
     flex-shrink: 0;
+    white-space: nowrap;
     letter-spacing: -0.2px;
     transition: all 0.15s;
   }
@@ -131,11 +138,8 @@
     background: #d5ecee;
     color: var(--teal-hover);
   }
-  @media (max-width: 600px) {
-    .brand-logo-topbar {
-      font-size: 13px;
-      padding: 4px 8px;
-    }
+  .brand-text-short {
+    display: none;
   }
 
   /* First-Time Welcome / Login Gate Modal */
@@ -693,6 +697,8 @@
     color: var(--text-muted);
     overflow: hidden;
     white-space: nowrap;
+    flex: 1 1 auto;
+    min-width: 0;
   }
   .crumb-link {
     color: var(--text-secondary);
@@ -701,6 +707,8 @@
     text-decoration: none;
     padding: 4px 6px;
     border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: background 0.15s, color 0.15s;
   }
   .crumb-link:hover {
@@ -712,10 +720,13 @@
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
+    flex-shrink: 1;
   }
   .crumb-sep {
     color: #cbd5e1;
     font-size: 12px;
+    flex-shrink: 0;
   }
 
   .topbar-right {
@@ -723,15 +734,27 @@
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+    min-width: 0;
+    order: 3;
   }
 
   .topbar-quiz-hud {
     display: none;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
+    order: 2;
+    min-width: 0;
   }
   .topbar-quiz-hud.active {
+    display: flex;
+  }
+  .topbar-quiz-timers {
     display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    min-width: 0;
   }
 
   .q-timer-badge {
@@ -744,6 +767,8 @@
     font-weight: 700;
     font-family: "SFMono-Regular", Consolas, monospace;
     border: 1px solid transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: background 0.25s, color 0.25s, border-color 0.25s;
   }
   .q-timer-badge.qt-green {
@@ -781,6 +806,8 @@
     background: var(--surface-subtle);
     color: var(--text-secondary);
     border: 1px solid var(--border);
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .pomo-pill {
@@ -793,6 +820,8 @@
     padding: 4px 9px;
     font-size: 12px;
     color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .pomo-label {
     font-weight: 600;
@@ -835,6 +864,8 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .subtle-link-btn:hover {
     border-color: var(--border-hover);
@@ -845,6 +876,22 @@
     background: var(--teal-light);
     color: var(--teal);
     border-color: var(--teal-border);
+  }
+  .btn-topic-notes {
+    background: var(--teal-light);
+    color: var(--teal);
+    border: 1px solid var(--teal-border);
+    font-weight: 700;
+  }
+  .btn-topic-notes:hover {
+    background: #d5ecee;
+    border-color: var(--teal);
+    color: var(--teal-hover);
+  }
+  .btn-topic-notes.active-split {
+    background: var(--teal);
+    color: #ffffff;
+    border-color: var(--teal);
   }
 
   /* ================= COLLAPSIBLE AMBOSS HIERARCHY SIDEBAR ================= */
@@ -1141,10 +1188,10 @@
   .mi-val { font-size: 18px; font-weight: 700; color: var(--text); }
   .mi-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
 
-  /* Two Clean Cards on Dashboard: Library & Quizzes */
+  /* Three Clean Cards on Dashboard: Library, QBank & Exams */
   .nav-cards-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
   }
   .nav-portal-card {
@@ -1949,6 +1996,500 @@
     }
   }
 
+
+  /* Past Exams Analysis Switcher & Type 1 / Type 2 Panels */
+  .sea-analysis-bar {
+    background: var(--teal-light);
+    border: 1.5px solid #99f6e4;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .sea-analysis-bar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .sea-analysis-btns {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    align-items: stretch;
+  }
+  .sea-amode-btn {
+    padding: 9px 10px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .sea-amode-btn:hover {
+    border-color: var(--teal);
+    color: var(--teal);
+    box-shadow: 0 2px 6px rgba(10, 108, 116, 0.08);
+  }
+  .sea-amode-btn.active-amode {
+    background: var(--teal);
+    color: #ffffff;
+    border-color: var(--teal);
+  }
+  .sea-dr-note-bar {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 7px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .sea-dr-note-text {
+    flex: 1 1 320px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #78350f;
+    font-weight: 600;
+  }
+  .sea-dr-stat-btn {
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1.5px solid #d97706;
+    background: #ffffff;
+    color: #b45309;
+    font-size: 12.5px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .sea-dr-stat-btn:hover {
+    background: #d97706;
+    color: #ffffff;
+  }
+  .sea-dr-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .sea-dr-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-subtle);
+    padding: 11px 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .sea-dr-card-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--teal);
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 5px;
+  }
+  .sea-dr-shift-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .sea-dr-shift-bar {
+    flex: 1;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .sea-dr-shift-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 999px;
+  }
+  .sea-card-mini-toggles {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px;
+  }
+  .sea-mini-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+  .sea-mini-btn:hover {
+    background: var(--surface-subtle);
+    color: var(--teal);
+  }
+  .sea-mini-btn.active-mini {
+    background: var(--teal);
+    color: #ffffff;
+  }
+  .sea-solved-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+  }
+  .sea-exam-mode-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    border: 1.5px solid var(--teal);
+    background: var(--surface);
+    color: var(--teal);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sea-exam-mode-btn:hover {
+    background: var(--teal-light);
+  }
+  .sea-body-hint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+  .sea-chap-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .sea-type2-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .sea-t2-kpi {
+    border: 1px solid var(--border);
+    background: var(--surface-subtle);
+    border-radius: 7px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sea-t2-kpi.kpi-repeat {
+    border-color: #cbd5e1;
+    background: #f0fdfa;
+  }
+  .sea-t2-kpi.kpi-new {
+    border-color: #fde68a;
+    background: #fffbeb;
+  }
+  .sea-t2-lbl {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .sea-t2-val {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .sea-t2-btn {
+    margin-top: 4px;
+    align-self: flex-start;
+    padding: 4px 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+    border-radius: 5px;
+    border: 1px solid var(--teal);
+    background: var(--surface);
+    color: var(--teal);
+    cursor: pointer;
+  }
+  .sea-t2-btn:hover {
+    background: var(--teal);
+    color: #ffffff;
+  }
+  .sea-type2-sources-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 16px;
+  }
+  .sea-repeat-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 1.4fr) 1fr 96px;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .sea-repeat-row:hover {
+    background: var(--teal-light);
+  }
+  .sea-sources-collapse-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .sea-sources-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 13px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sea-sources-toggle-btn:hover {
+    border-color: var(--teal);
+    color: var(--teal);
+    background: var(--surface-subtle);
+  }
+  .sea-sources-toggle-btn.expanded {
+    border-color: var(--teal);
+    background: var(--teal-light);
+    color: var(--teal);
+  }
+  /* Type 3 Cycle Comparison Mode */
+  .sea-cmp-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+  .sea-cmp-toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--surface-subtle);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sea-cmp-toggle-pill.active-cmp-pill {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #ffffff;
+  }
+  .sea-cmp-avg-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .sea-cmp-avg-box {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 12px 14px;
+  }
+  .sea-cmp-avg-box.col-trial { border-top: 3px solid #16a34a; }
+  .sea-cmp-avg-box.col-sim { border-top: 3px solid #7c3aed; }
+  .sea-cmp-avg-box.col-real { border-top: 3px solid #0284c7; }
+  .sea-cmp-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .sea-cmp-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--surface-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .sea-cmp-quick-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .sea-cmp-qpill {
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .sea-cmp-qpill.q-trial { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+  .sea-cmp-qpill.q-sim { background: #f3e8ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+  .sea-cmp-qpill.q-real { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+  .sea-cmp-cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    padding: 14px 16px;
+  }
+  .sea-cmp-col {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-subtle);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sea-cmp-col.col-trial { border-top: 3px solid #16a34a; }
+  .sea-cmp-col.col-sim { border-top: 3px solid #7c3aed; }
+  .sea-cmp-col.col-real { border-top: 3px solid #0284c7; }
+  .sea-cmp-col-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sea-cmp-slot {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 7px;
+    padding: 9px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .sea-cmp-slot-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .sea-cmp-bar-track {
+    height: 9px;
+    border-radius: 999px;
+    background: #fef3c7;
+    overflow: hidden;
+    display: flex;
+  }
+  .sea-cmp-bar-rep {
+    height: 100%;
+    background: var(--teal);
+  }
+  .sea-cmp-slot-metrics {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .sea-cmp-slot-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 2px;
+  }
+  .sea-cmp-overlap-bar {
+    margin: 0 16px 14px 16px;
+    padding: 9px 12px;
+    border-radius: 7px;
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  @media (max-width: 980px) {
+    .sea-analysis-btns {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sea-dr-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 820px) {
+    .sea-analysis-btns {
+      grid-template-columns: 1fr;
+    }
+    .sea-dr-grid {
+      grid-template-columns: 1fr;
+    }
+    .sea-type2-kpis {
+      grid-template-columns: 1fr;
+    }
+    .sea-type2-sources-grid {
+      grid-template-columns: 1fr;
+    }
+    .sea-repeat-row {
+      grid-template-columns: minmax(120px, 1.3fr) 1fr 86px;
+    }
+    .sea-cmp-avg-strip,
+    .sea-cmp-cols {
+      grid-template-columns: 1fr;
+    }
+  }
+
   /* Search & Custom Exam Modals */
   .search-input-box {
     width: 100%;
@@ -2162,10 +2703,11 @@
     border-top: 3px solid var(--teal);
     border-radius: 8px;
     padding: 20px 24px;
-    max-height: calc(100vh - 86px);
+    max-height: calc(100vh - var(--topbar-h) - 24px);
     overflow-y: auto;
     position: sticky;
-    top: 68px;
+    top: calc(var(--topbar-h) + 12px);
+    scroll-margin-top: calc(var(--topbar-h) + 12px);
     min-width: 0;
     box-shadow: 0 4px 16px rgba(10, 108, 116, 0.06);
   }
@@ -2479,6 +3021,13 @@
 
   <style>
     /* ================= FIREBASE AUTH & CLOUD SYNC STYLES ================= */
+    .auth-pill-wrap {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 4px;
+      flex-shrink: 1;
+      min-width: 0;
+    }
     .auth-topbar-pill {
       display: inline-flex;
       align-items: center;
@@ -2492,6 +3041,16 @@
       cursor: pointer;
       transition: all 0.15s;
       color: var(--text);
+      white-space: nowrap;
+      max-width: 180px;
+      overflow: hidden;
+      min-width: 0;
+    }
+    #authTopLabel {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
     }
     .auth-topbar-pill:hover {
       border-color: var(--teal);
@@ -2586,35 +3145,65 @@
       font-weight: 500;
     }
     /* ================= COMPREHENSIVE MOBILE & TABLET RESPONSIVE ENHANCEMENTS ================= */
+  @media (max-width: 1320px) {
+    .pomo-pill .pomo-label {
+      display: none;
+    }
+    .topbar-quiz-hud.active {
+      order: 4;
+      flex: 1 0 100%;
+      width: 100%;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 6px;
+      margin-top: 1px;
+      gap: 8px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .breadcrumbs {
+      display: none !important;
+    }
+    .auth-topbar-pill {
+      max-width: 135px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .btn-label-desktop {
+      display: none !important;
+    }
+  }
+
   @media (max-width: 820px) {
     .topbar {
-      padding: 0 10px;
-      gap: 6px;
+      padding: 6px 10px;
+      gap: 6px 8px;
     }
     .topbar-left {
       gap: 6px;
       flex: 0 1 auto;
       min-width: 0;
     }
-    .breadcrumbs {
-      max-width: 130px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-size: 12px;
-    }
     .topbar-right {
       gap: 5px;
-      flex-shrink: 1;
+      flex: 1 1 auto;
       min-width: 0;
       justify-content: flex-end;
     }
     .pomo-pill {
-      padding: 3px 8px;
+      padding: 3px 7px;
       font-size: 11.5px;
+      gap: 4px;
     }
-    .pomo-pill .pomo-label {
-      display: none;
+    .auth-pill-wrap {
+      margin-left: 0;
+    }
+    .auth-topbar-pill {
+      max-width: 112px;
+      padding: 4px 9px;
+      font-size: 11.5px;
     }
     .sidebar {
       position: fixed;
@@ -2656,38 +3245,92 @@
     }
   }
 
-  @media (max-width: 600px) {
-    .main-container {
-      padding: 12px 10px 50px 10px !important;
+  @media (max-width: 640px) {
+    .brand-logo-topbar {
+      font-size: 13px;
+      padding: 4px 8px;
+      gap: 5px;
     }
-    .sidebar-toggle-btn span:last-child {
-      display: none; /* Hide 'Library' text on phones, show icon */
+    .brand-text-full {
+      display: none;
+    }
+    .brand-text-short {
+      display: inline;
     }
     .sidebar-toggle-btn {
       padding: 5px 8px;
+      font-size: 12.5px;
     }
-    .breadcrumbs {
-      display: none !important; /* Hide breadcrumbs on phones for maximum button space */
+    .topbar-quiz-hud.active {
+      gap: 6px;
+      padding-top: 5px;
     }
-    .topbar-quiz-hud .session-timer-badge {
-      display: none !important;
+    .q-timer-badge, .session-timer-badge {
+      padding: 3px 7px;
+      font-size: 11.5px;
+      gap: 4px;
     }
-    #btnSplitNotes #btnSplitNotesLabel {
-      display: none;
-    }
-    .btn-label-desktop {
-      display: none !important; /* Icons only for Search & Custom Exam on phones */
+    .subtle-link-btn.btn-topic-notes {
+      padding: 4px 10px;
+      font-size: 12px;
     }
     .auth-topbar-pill {
       padding: 3px 8px;
       font-size: 11.5px;
-      max-width: 100px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      max-width: 96px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .topbar {
+      padding: 5px 8px;
+      gap: 5px 6px;
+      min-height: 48px;
+    }
+    .topbar-left {
+      gap: 5px;
+    }
+    .sidebar-toggle-btn {
+      padding: 5px 7px;
+    }
+    .sidebar-toggle-btn .sb-btn-lbl {
+      display: none;
     }
     .topbar-right {
       gap: 4px;
+    }
+    .pomo-pill {
+      padding: 3px 6px;
+      gap: 3px;
+    }
+    .pomo-pill .pomo-reset-btn {
+      display: none;
+    }
+    .pomo-timer {
+      min-width: 34px;
+      font-size: 11.5px;
+    }
+    .subtle-link-btn {
+      padding: 4px 7px;
+      font-size: 11.5px;
+    }
+    .topbar-quiz-hud .session-timer-badge {
+      display: none !important;
+    }
+    .subtle-link-btn.btn-topic-notes {
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+    .auth-topbar-pill {
+      max-width: 82px;
+      padding: 3px 7px;
+      font-size: 11px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .main-container {
+      padding: 12px 10px 50px 10px !important;
     }
     .article-card, .quiz-card {
       padding: 15px 12px !important;
@@ -2878,21 +3521,22 @@
 <body>
 
 <!-- ================= FIXED STICKY TOP BAR (WITH QUIZ TIMERS & POMODORO) ================= -->
-<header class="topbar">
+<header class="topbar" id="mainTopbar">
   <div class="topbar-left">
-    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Show / Hide Library Hierarchy Sidebar">
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Show / Hide Library Hierarchy Sidebar">
       <span>☰</span>
-      <span>Library</span>
+      <span class="sb-btn-lbl">Library</span>
     </button>
     <div class="brand-logo-topbar" onclick="navigateTo('home')" title="EMLE in a Nutshell — Main Dashboard">
       <span>🩺</span>
-      <span>EMLE in a Nutshell</span>
+      <span class="brand-text-full">EMLE in a Nutshell</span>
+      <span class="brand-text-short">EMLE</span>
     </div>
     <nav class="breadcrumbs" id="breadcrumbNav"></nav>
   </div>
 
-  <div class="topbar-right">
-    <div class="topbar-quiz-hud" id="topbarQuizHud">
+  <div class="topbar-quiz-hud" id="topbarQuizHud">
+    <div class="topbar-quiz-timers">
       <div class="q-timer-badge qt-green" id="qTimerBadge" title="Ascending Question Timer (Green: 0-29s, Yellow: 30-44s, Red Alert: >=45s)">
         <span>Q:</span>
         <span id="qTimerText">00:00</span>
@@ -2905,24 +3549,26 @@
         <span id="sessionTimerText">00:00</span>
         <button class="pomo-icon-btn" id="sTimerPauseBtn" onclick="togglePauseQuizTimers()" title="Pause / Resume Session Timer">⏸</button>
       </div>
-
-      <button class="subtle-link-btn" id="btnSplitNotes" onclick="toggleSplitNotes()">
-        <span>📖</span>
-        <span id="btnSplitNotesLabel">Topic Notes</span>
-      </button>
     </div>
 
+    <button class="subtle-link-btn btn-topic-notes" id="btnSplitNotes" onclick="toggleSplitNotes()" title="Show / Hide Topic VIP Notes alongside questions">
+      <span>📖</span>
+      <span id="btnSplitNotesLabel">Topic Notes</span>
+    </button>
+  </div>
+
+  <div class="topbar-right">
     <div class="pomo-pill">
       <span class="pomo-label" onclick="togglePomoPreset()" title="Click to switch 25m / 50m">Pomodoro</span>
       <span class="pomo-timer" id="pomoTime">25:00</span>
       <button class="pomo-icon-btn" id="pomoPlayBtn" onclick="togglePomoRun()" title="Start / Pause">▶</button>
-      <button class="pomo-icon-btn" onclick="resetPomo()" title="Reset">↺</button>
+      <button class="pomo-icon-btn pomo-reset-btn" onclick="resetPomo()" title="Reset">↺</button>
     </div>
 
-    <button class="subtle-link-btn" onclick="openSearchModal()" title="Instant Search across 135 Topics & 2,052 Questions (Ctrl+K)">🔍 Search</button>
-    <button class="subtle-link-btn" onclick="openCustomExamModal()" title="Build a Custom Exam Block (Tutor or Timed Exam Mode)">⚡ Custom Exam</button>
+    <button class="subtle-link-btn" id="searchBtn" onclick="openSearchModal()" title="Instant Search across 135 Topics & 2,052 Questions (Ctrl+K)">🔍<span class="btn-label-desktop"> Search</span></button>
+    <button class="subtle-link-btn" id="customExamBtn" onclick="openCustomExamModal()" title="Build a Custom Exam Block (Tutor or Timed Exam Mode)">⚡<span class="btn-label-desktop"> Custom Exam</span></button>
         
-    <div id="authPillContainer" style="display:inline-flex; align-items:center; margin-left:4px;">
+    <div id="authPillContainer" class="auth-pill-wrap">
       <button class="auth-topbar-pill" id="authTopBtn" onclick="openAuthModal()" title="Cloud Sync & Account">
         <span class="sync-indicator-dot sync-dot-gray" id="authSyncDot"></span>
         <span id="authTopLabel">Sign In</span>
@@ -2938,6 +3584,9 @@
   </div>
   <div class="sb-home-link" id="sbQuizzesLink" onclick="navigateTo('quizzes')">
     <span>📝 QBank</span>
+  </div>
+  <div class="sb-home-link" id="sbExamsLink" onclick="navigateTo('exams')">
+    <span>🎓 Exams</span>
   </div>
   <div class="sb-home-link" id="sbAnalyticsLink" onclick="navigateTo('analytics')">
     <span>📊 Exam Analytics</span>
@@ -3018,6 +3667,18 @@
           </div>
           <div class="npc-footer">
             <span>Open QBank</span>
+            <span>&rarr;</span>
+          </div>
+        </div>
+
+        <div class="nav-portal-card" onclick="navigateTo('exams')">
+          <div>
+            <span class="npc-tag">Past EMLE Papers</span>
+            <h2 class="npc-title">🎓 Exams</h2>
+            <p class="npc-desc" dir="rtl" style="text-align: right; line-height: 1.6; font-size: 13.5px;">حل امتحانات <strong>EMLE</strong> السابقة كاملة على بعضها (<strong>49 امتحان</strong>) بنظام <strong>Tutor</strong> أو <strong>Exam Mode</strong> مع تحليل اختياري.</p>
+          </div>
+          <div class="npc-footer">
+            <span>Open Exams</span>
             <span>&rarr;</span>
           </div>
         </div>
@@ -3349,6 +4010,21 @@
       <div id="studyPlanPageContainer"></div>
     </section>
 
+    <!-- PAGE 8: PAST EXAMS & OPTIONAL ANALYSIS PAGE -->
+    <section class="view-page" id="page-exams">
+      <div class="page-title-block" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h1>🎓 Past EMLE Exams</h1>
+          <p dir="rtl" style="text-align:right; margin-top:4px;">حل أي امتحان سابق كامل على بعضه بنظام <strong>Tutor Mode</strong> (تصحيح وشرح فوري) أو <strong>Timed Exam Mode</strong> (محاكاة بدون إظهار الإجابات إلا بعد التسليم)، ويمكنك إظهار التحليل في أي وقت.</p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn-outline" onclick="navigateTo('analytics')">📊 Overall Analytics</button>
+          <button class="btn-outline" onclick="navigateTo('home')">&larr; Back to Dashboard</button>
+        </div>
+      </div>
+      <div id="examsPageContainer"></div>
+    </section>
+
     <!-- GLOBAL SITE FOOTER: TELEGRAM CHANNELS -->
     <footer class="global-site-footer" dir="rtl" style="margin-top: 40px; padding-top: 10px;">
       <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; box-shadow: 0 1px 3px rgba(16,24,40,0.04);">
@@ -3502,6 +4178,22 @@
     </div>
   </div>
 </div>
+<!-- ================= DR. AHMED AMER REAL SHIFT STATS MODAL ================= -->
+<div class="modal-backdrop" id="drAhmedStatsModal" onclick="if(event.target===this) closeDrAhmedStatsModal()">
+  <div class="modal-box" style="max-width:820px; width:96%; max-height:90vh; overflow-y:auto;" dir="rtl">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:12px;">
+      <div>
+        <h3 style="margin:0; color:var(--text);">📊 إحصائية د. أحمد عامر — تفصيل التكرارات (أول / ثاني / ثالث فعلي)</h3>
+        <div style="font-size:12.5px; color:var(--text-secondary); margin-top:4px; line-height:1.5;">
+          عدد الأسئلة المتكررة في كل يوم امتحاني منفصل (<strong>أول فعلي / ثاني فعلي / ثالث فعلي</strong>) لأن المنصة تدمج أيام كل دور فعلي معاً في امتحان واحد:
+        </div>
+      </div>
+      <button class="subtle-link-btn" onclick="closeDrAhmedStatsModal()" style="flex-shrink:0;">&times; Close</button>
+    </div>
+    <div id="drAhmedStatsBody"></div>
+  </div>
+</div>
+
 <!-- ================= FIRST-TIME WELCOME & SIGN-IN GATE ================= -->
 <div class="welcome-auth-backdrop" id="welcomeAuthOverlay">
   <div class="welcome-auth-card">
@@ -4689,6 +5381,8 @@ function handleChapClick(chapId, available) {
 function renderSidebarTree() {
   document.getElementById("sbHomeLink").classList.toggle("active-nav", state.currentView === "home");
   document.getElementById("sbQuizzesLink").classList.toggle("active-nav", state.currentView === "quizzes");
+  const sbEx = document.getElementById("sbExamsLink");
+  if (sbEx) sbEx.classList.toggle("active-nav", state.currentView === "exams");
   const sbAn = document.getElementById("sbAnalyticsLink");
   if (sbAn) sbAn.classList.toggle("active-nav", state.currentView === "analytics");
   const sbSp = document.getElementById("sbStudyPlanLink");
@@ -4867,6 +5561,8 @@ function navigateTo(view, param) {
   if (topbarQuizHud) {
     topbarQuizHud.classList.toggle("active", view === "quiz");
   }
+  syncTopbarHeight();
+  requestAnimationFrame(syncTopbarHeight);
 
   const mainContainer = document.getElementById("mainContainer");
   mainContainer.classList.toggle("wide-split", view === "quiz" && state.splitNotesOpen);
@@ -4880,6 +5576,7 @@ function navigateTo(view, param) {
   else if (view === "chapter") renderChapter();
   else if (view === "topic") renderTopicPage(state.currentTopicId);
   else if (view === "quiz") renderQuizPage(true);
+  else if (view === "exams") renderExamsPage();
   else if (view === "analytics") renderAnalyticsPage();
   else if (view === "studyplan") renderStudyPlanPage();
 
@@ -4909,6 +5606,12 @@ function renderBreadcrumbs() {
       <a class="crumb-link" onclick="navigateTo('home')">Dashboard</a>
       <span class="crumb-sep">/</span>
       <span class="crumb-current">QBank</span>
+    `;
+  } else if (v === "exams") {
+    nav.innerHTML = `
+      <a class="crumb-link" onclick="navigateTo('home')">Dashboard</a>
+      <span class="crumb-sep">/</span>
+      <span class="crumb-current">🎓 Past Exams</span>
     `;
   } else if (v === "analytics") {
     nav.innerHTML = `
@@ -4954,6 +5657,9 @@ function renderBreadcrumbs() {
       const cid = state.quizFilter.replace("chapter_", "");
       quizTitle = `${getChapterTitle(cid)} Quiz`;
       backCall = `navigateTo('quizzes')`;
+    } else if (state.quizFilter === "custom_exam" && state.customExamTitle) {
+      quizTitle = state.customExamTitle;
+      backCall = state.customExamReturnView === "exams" ? "navigateTo('exams')" : "navigateTo('quizzes')";
     }
     nav.innerHTML = `
       <a class="crumb-link" onclick="${backCall}">&larr; Back</a>
@@ -5403,6 +6109,8 @@ function launchCustomExamBlock() {
   }
 
   state.customQs = ceConfig.count > 0 ? shuffled.slice(0, ceConfig.count) : shuffled;
+  state.customExamTitle = "Custom Exam Block";
+  state.customExamReturnView = "quizzes";
   state.examMode = (ceConfig.mode === "exam");
   state.examSubmitted = false;
   closeCustomExamModal();
@@ -5424,13 +6132,16 @@ function submitExamBlock() {
   renderQuizPage(false);
 }
 
-// ================= PAGE 6: FULL VISUAL ANALYTICS & SEPARATE EXAM ANALYSIS RENDERER =================
+// ================= PAGE 6: VISUAL ANALYTICS & PAGE 8: PAST EXAMS RENDERER =================
 let seaState = {
-  subTab: "all",       // "all" | "separate" | "overview"
-  filter: "ALL",       // "ALL" | "Real" | "Trial" | "Simulation"
+  filter: "ALL",               // "ALL" | "Real" | "Trial" | "Simulation"
   search: "",
-  sortBy: "newest",    // "newest" | "oldest" | "most_qs"
-  collapsedCards: {},  // tag -> boolean (false/undefined = expanded by default)
+  sortBy: "newest",            // "newest" | "oldest" | "most_qs"
+  analysisMode: "none",        // "none" (hidden by default!) | "chapters" | "repeats" | "compare"
+  cardAnalysisMode: {},        // per-card override: tag -> "none" | "chapters" | "repeats"
+  expandedRepeatSources: {},   // tag -> boolean (collapsed by default inside Type 2!)
+  mergeConsecutiveMonths: true,// group adjacent months into unified EMLE cycle (e.g. Nov-Dec 2025)
+  compareOnlyComplete: false,  // filter cycles having >= 2 exam categories
   showZeroChaps: false
 };
 
@@ -5442,361 +6153,932 @@ const CHAPTER_COLORS = {
   nephrology: "#7c3aed",
   neurology: "#4f46e5",
   psychiatry: "#9333ea",
-  geriatrics: "#64748b",
-  rheumatology: "#d97706",
-  endocrine: "#059669",
-  ophthalmology: "#0891b2",
-  general_surgery: "#e11d48",
-  orthopedics: "#ea580c",
-  pediatrics: "#16a34a",
-  obstetrics: "#db2777",
-  gynecology: "#c026d3",
-  emergency: "#b91c1c",
-  epidemiology: "#475569"
+  rheumatology: "#db2777",
+  endocrine: "#ea580c",
+  dermatology: "#d97706",
+  ophthalmology: "#059669",
+  ent: "#65a30d",
+  orthopedics: "#475569",
+  trauma: "#b91c1c",
+  pediatrics: "#0891b2",
+  obgyn: "#e11d48",
+  urology: "#0369a1",
+  ethics: "#64748b"
 };
 
 function parseExamTagMeta(rawTag) {
-  const tag = normalizeExamTag(rawTag);
-  const m = tag.match(/^(\d{1,2})\/(\d{4})([A-Za-z]*)$/);
+  const clean = normalizeExamTag(rawTag);
+  const m = clean.match(/^(\d{1,2})\/(\d{4})\s*([A-Za-z]*)$/);
+  const months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   if (!m) {
     return {
-      tag,
+      tag: clean,
       month: 0,
       year: 0,
       code: "",
-      typeLabel: "Simulation Exam",
-      fullTitle: "Exam " + tag,
-      compactTitle: "Exam" + tag,
-      filterCat: "Simulation",
-      badgeClass: "sea-type-sim",
+      typeCategory: "Other",
+      typeLabel: "Exam",
+      badgeClass: "sea-type-other",
+      fullTitle: clean,
       sortKey: 0
     };
   }
   const month = parseInt(m[1], 10);
   const year = parseInt(m[2], 10);
   const code = (m[3] || "").toUpperCase();
-  let typeLabel = "Simulation Exam";
-  let filterCat = "Simulation";
-  let badgeClass = "sea-type-sim";
-  let codeRank = 0;
+  let typeCategory = "Trial";
+  let typeLabel = "Trial";
+  let badgeClass = "sea-type-trial";
+  let codeRank = 3; // Order within same month: D(1) < M(2) < T(3) < S(4) < R(5)
 
   if (code === "R") {
+    typeCategory = "Real";
     typeLabel = "Real Exam";
-    filterCat = "Real";
     badgeClass = "sea-type-real";
     codeRank = 5;
-  } else if (code === "T") {
-    typeLabel = "Trial Exam";
-    filterCat = "Trial";
-    badgeClass = "sea-type-trial";
-    codeRank = 3;
   } else if (code === "S") {
-    typeLabel = "Simulation Exam";
-    filterCat = "Simulation";
+    typeCategory = "Simulation";
+    typeLabel = "Simulation";
     badgeClass = "sea-type-sim";
     codeRank = 4;
   } else if (code === "M") {
+    typeCategory = "Simulation";
     typeLabel = "Mock Exam";
-    filterCat = "Simulation";
     badgeClass = "sea-type-sim";
     codeRank = 2;
   } else if (code === "D") {
+    typeCategory = "Simulation";
     typeLabel = "Demo Exam";
-    filterCat = "Simulation";
     badgeClass = "sea-type-sim";
     codeRank = 1;
   }
 
+  const mName = months[month] || ("M" + month);
   return {
-    tag,
+    tag: clean,
     month,
     year,
     code,
-    dateStr: `${month}/${year}`,
+    typeCategory,
     typeLabel,
-    fullTitle: `${typeLabel} ${month}/${year}`,
-    compactTitle: `${typeLabel}${month}/${year}`,
-    filterCat,
     badgeClass,
+    fullTitle: `${mName} ${year} (${typeLabel})`,
     sortKey: (year * 1000) + (month * 10) + codeRank
   };
 }
 
-const CORE_DIVISIONS = [
-  { id: "div_im", title: "Internal Medicine", color: "#0a6c74" },
-  { id: "div_surgery", title: "General Surgery", color: "#b91c1c" },
-  { id: "div_pediatrics", title: "Pediatrics", color: "#15803d" },
-  { id: "div_obgyn", title: "Obstetrics & Gynecology", color: "#9333ea" },
-  { id: "div_misc", title: "Public Health & Emergency", color: "#475467" }
-];
-
-function getDivIdFromChap(cid) {
-  if (!cid) return "div_im";
-  const c = cid.toLowerCase();
-  if (c === "general_surgery" || c === "orthopedics") return "div_surgery";
-  if (c === "pediatrics") return "div_pediatrics";
-  if (c === "obstetrics" || c === "gynecology") return "div_obgyn";
-  if (c === "emergency" || c === "epidemiology") return "div_misc";
-  return "div_im";
+function getAllChaptersCatalog() {
+  const list = [];
+  (DATA.tree || []).forEach(div => {
+    (div.chapters || []).forEach(ch => {
+      list.push({
+        id: ch.id,
+        title: ch.title,
+        color: CHAPTER_COLORS[ch.id] || "#0d9488"
+      });
+    });
+  });
+  return list;
 }
 
 function computeSeparateExamsData() {
   const examMap = {};
+  const qByNum = {};
   DATA.questions.forEach(q => {
-    const rawTags = q.exam_tags || [];
-    const seenInQ = new Set();
-    rawTags.forEach(rt => {
-      const tag = normalizeExamTag(rt);
-      if (!tag || seenInQ.has(tag)) return;
-      seenInQ.add(tag);
-      if (!examMap[tag]) {
-        const meta = parseExamTagMeta(tag);
-        examMap[tag] = {
-          ...meta,
-          questions: [],
-          divCounts: { "div_im": 0, "div_surgery": 0, "div_pediatrics": 0, "div_obgyn": 0, "div_misc": 0 }
+    qByNum[q.number] = q;
+    const seenInThisQ = new Set();
+    (q.exam_tags || []).forEach(rawTag => {
+      const cleanTag = normalizeExamTag(rawTag);
+      if (!cleanTag || seenInThisQ.has(cleanTag)) return;
+      seenInThisQ.add(cleanTag);
+      if (!examMap[cleanTag]) {
+        examMap[cleanTag] = {
+          tag: cleanTag,
+          meta: parseExamTagMeta(cleanTag),
+          qSet: new Set(),
+          qNums: [],
+          qObjs: []
         };
       }
-      examMap[tag].questions.push(q);
-      const did = getDivIdFromChap(q.chapter_id);
-      examMap[tag].divCounts[did] = (examMap[tag].divCounts[did] || 0) + 1;
+      examMap[cleanTag].qSet.add(q.number);
+      examMap[cleanTag].qNums.push(q.number);
+      examMap[cleanTag].qObjs.push(q);
     });
   });
 
-  const examsList = Object.values(examMap).map(ex => {
-    const totalQs = ex.questions.length;
-    const divisionsBreakdown = CORE_DIVISIONS.map(d => {
-      const count = ex.divCounts[d.id] || 0;
-      const pct = totalQs > 0 ? ((count / totalQs) * 100) : 0;
-      return {
-        id: d.id,
-        title: d.title,
-        color: d.color,
-        count,
-        pct,
-        pctStr: pct.toFixed(1)
-      };
+  const chaptersCatalog = getAllChaptersCatalog();
+  const rawList = Object.values(examMap);
+
+  // Sort chronologically (oldest -> newest) to compute strictly prior-exam repeats accurately
+  const chronoList = rawList.slice().sort((a, b) => a.meta.sortKey - b.meta.sortKey);
+
+  const exams = chronoList.map((ex, cIdx) => {
+    const totalQs = ex.qObjs.length;
+    const meta = ex.meta;
+
+    // Type 1: Chapter breakdown across all chapters represented in this exam
+    const chapCounts = {};
+    ex.qObjs.forEach(q => {
+      const cid = q.chapter_id || "other";
+      chapCounts[cid] = (chapCounts[cid] || 0) + 1;
     });
-    divisionsBreakdown.sort((a, b) => b.count - a.count);
+
+    const chaptersBreakdown = chaptersCatalog
+      .map(ch => {
+        const count = chapCounts[ch.id] || 0;
+        const pct = totalQs > 0 ? (count / totalQs) * 100 : 0;
+        return {
+          id: ch.id,
+          title: ch.title,
+          color: ch.color,
+          count,
+          pct,
+          pctStr: pct.toFixed(1)
+        };
+      })
+      .filter(ch => ch.count > 0)
+      .sort((a, b) => b.count - a.count || a.title.localeCompare(b.title));
+
+    // Type 2: Repeated questions ONLY from chronologically PRIOR exams (sortKey < ex.meta.sortKey)
+    const priorExams = chronoList.slice(0, cIdx).filter(p => p.meta.sortKey < meta.sortKey);
+    const priorUnionSet = new Set();
+    priorExams.forEach(p => {
+      p.qSet.forEach(qn => priorUnionSet.add(qn));
+    });
+
+    const repeatedQNums = [];
+    const newQNums = [];
+    ex.qObjs.forEach(q => {
+      if (priorUnionSet.has(q.number)) {
+        repeatedQNums.push(q.number);
+      } else {
+        newQNums.push(q.number);
+      }
+    });
+
+    const priorExamSources = [];
+    priorExams.forEach(p => {
+      const sharedNums = [];
+      ex.qObjs.forEach(q => {
+        if (p.qSet.has(q.number)) sharedNums.push(q.number);
+      });
+      if (sharedNums.length > 0) {
+        const pct = totalQs > 0 ? (sharedNums.length / totalQs) * 100 : 0;
+        priorExamSources.push({
+          tag: p.tag,
+          fullTitle: p.meta.fullTitle,
+          typeLabel: p.meta.typeLabel,
+          badgeClass: p.meta.badgeClass,
+          sortKey: p.meta.sortKey,
+          count: sharedNums.length,
+          pct,
+          pctStr: pct.toFixed(1),
+          qNums: sharedNums
+        });
+      }
+    });
+
+    priorExamSources.sort((a, b) => b.count - a.count || b.sortKey - a.sortKey);
+
+    const repeatedCount = repeatedQNums.length;
+    const newCount = newQNums.length;
+    const repeatedPct = totalQs > 0 ? (repeatedCount / totalQs) * 100 : 0;
+    const newPct = totalQs > 0 ? (newCount / totalQs) * 100 : 0;
+
     return {
-      ...ex,
+      tag: ex.tag,
+      fullTitle: meta.fullTitle,
+      typeCategory: meta.typeCategory,
+      typeLabel: meta.typeLabel,
+      badgeClass: meta.badgeClass,
+      sortKey: meta.sortKey,
+      month: meta.month,
+      year: meta.year,
       totalQs,
-      divisionsBreakdown
+      qNums: ex.qNums,
+      qObjs: ex.qObjs,
+      chaptersBreakdown,
+      priorRepeatStats: {
+        priorExamsCount: priorExams.length,
+        repeatedCount,
+        repeatedPctStr: repeatedPct.toFixed(1),
+        repeatedQNums,
+        newCount,
+        newPctStr: newPct.toFixed(1),
+        newQNums,
+        priorExamSources
+      }
     };
   });
 
-  // Default sort: Newest to Oldest
-  examsList.sort((a, b) => b.sortKey - a.sortKey || b.totalQs - a.totalQs);
-  return examsList;
+  // Sort by active UI order
+  if (seaState.sortBy === "oldest") {
+    exams.sort((a, b) => a.sortKey - b.sortKey);
+  } else if (seaState.sortBy === "most_qs") {
+    exams.sort((a, b) => b.totalQs - a.totalQs || b.sortKey - a.sortKey);
+  } else {
+    exams.sort((a, b) => b.sortKey - a.sortKey);
+  }
+  return exams;
+}
+
+const DR_AHMED_SHIFT_STATS = [
+  { round: "11/2023", shifts: [{ label: "أول فعلي", count: 34 }, { label: "تاني فعلي", count: 85 }, { label: "تالت فعلي", count: 97 }] },
+  { round: "2/2024",  shifts: [{ label: "أول فعلي", count: 27 }, { label: "تاني فعلي", count: 11 }, { label: "تالت فعلي", count: 29 }] },
+  { round: "8/2024",  shifts: [{ label: "أول فعلي", count: 49 }, { label: "تاني فعلي", count: 29 }, { label: "تالت فعلي", count: 97 }] },
+  { round: "11/2024", shifts: [{ label: "أول فعلي", count: 14 }, { label: "تاني فعلي", count: 9 },  { label: "تالت فعلي", count: 100 }] },
+  { round: "2/2025",  shifts: [{ label: "أول فعلي", count: 36 }, { label: "تاني فعلي", count: 23 }, { label: "تالت فعلي", count: 100 }] },
+  { round: "8/2025",  shifts: [{ label: "أول فعلي", count: 44 }, { label: "تاني فعلي", count: 49 }, { label: "تالت فعلي", count: 100 }] },
+  { round: "12/2025", shifts: [{ label: "أول فعلي", count: 43 }, { label: "تاني فعلي", count: 100 }] },
+  { round: "3/2026",  shifts: [{ label: "أول فعلي", count: 42 }, { label: "تاني فعلي", count: 93 }] },
+  { round: "7/2026",  shifts: [{ label: "أول فعلي", count: 99 }, { label: "تاني فعلي", count: 100 }] }
+];
+
+function openDrAhmedStatsModal() {
+  const modal = document.getElementById("drAhmedStatsModal");
+  const body = document.getElementById("drAhmedStatsBody");
+  if (!modal || !body) return;
+  body.innerHTML = `
+    <div class="sea-dr-grid">
+      ${DR_AHMED_SHIFT_STATS.map(item => `
+        <div class="sea-dr-card">
+          <div class="sea-dr-card-title">نسبة التكرار في ${item.round}:</div>
+          ${item.shifts.map(s => `
+            <div class="sea-dr-shift-row">
+              <span style="min-width:64px;">${s.label}</span>
+              <div class="sea-dr-shift-bar" title="${s.count} سؤال">
+                <div class="sea-dr-shift-fill" style="width:${Math.min(100, s.count)}%;"></div>
+              </div>
+              <span style="color:var(--teal); white-space:nowrap;">= ${s.count} سؤال</span>
+            </div>
+          `).join("")}
+        </div>
+      `).join("")}
+    </div>
+  `;
+  modal.classList.add("show");
+}
+
+function closeDrAhmedStatsModal() {
+  const modal = document.getElementById("drAhmedStatsModal");
+  if (modal) modal.classList.remove("show");
 }
 
 function openSeparateExamAnalysis() {
-  seaState.subTab = "separate";
-  navigateTo("analytics");
+  navigateTo("exams");
 }
 
-function setAnalyticsSubTab(tab) {
-  seaState.subTab = tab;
-  renderAnalyticsPage();
+function setSeaFilter(f) {
+  seaState.filter = f;
+  renderExamsPageOnly();
 }
 
-function setSeaFilter(filterVal) {
-  seaState.filter = filterVal;
-  renderSeparateExamSectionOnly();
-}
-
-function setSeaSort(sortVal) {
-  seaState.sortBy = sortVal;
-  renderSeparateExamSectionOnly();
+function setSeaSort(val) {
+  seaState.sortBy = val;
+  renderExamsPageOnly();
 }
 
 function onSeaSearchInput(val) {
-  seaState.search = val || "";
-  renderSeparateExamSectionOnly();
+  seaState.search = val;
+  renderExamsPageOnly();
 }
 
-function toggleAllSeaCards(collapse) {
-  const allExams = computeSeparateExamsData();
-  allExams.forEach(ex => {
-    seaState.collapsedCards[ex.tag] = collapse;
-  });
-  renderSeparateExamSectionOnly();
+function setSeaAnalysisMode(mode) {
+  if (mode === seaState.analysisMode && mode !== "none") {
+    seaState.analysisMode = "none";
+  } else {
+    seaState.analysisMode = mode;
+  }
+  seaState.cardAnalysisMode = {};
+  renderExamsPageOnly();
 }
 
-function practiceExamByTag(tag, targetDivId, event) {
-  if (event) event.stopPropagation();
-  const meta = parseExamTagMeta(tag);
-  const pool = DATA.questions.filter(q => {
-    const hasTag = (q.exam_tags || []).some(rt => normalizeExamTag(rt) === tag);
-    if (!hasTag) return false;
-    if (targetDivId && getDivIdFromChap(q.chapter_id) !== targetDivId) return false;
-    return true;
+function toggleCardSeaAnalysis(tag, mode, ev) {
+  if (ev) ev.stopPropagation();
+  const baseMode = (seaState.analysisMode === "chapters" || seaState.analysisMode === "repeats") ? seaState.analysisMode : "none";
+  const currentEffective = seaState.cardAnalysisMode[tag] || baseMode;
+  if (currentEffective === mode) {
+    seaState.cardAnalysisMode[tag] = "none";
+  } else {
+    seaState.cardAnalysisMode[tag] = mode;
+  }
+  renderExamsPageOnly();
+}
+
+function toggleRepeatSourcesCollapse(tag, ev) {
+  if (ev) ev.stopPropagation();
+  seaState.expandedRepeatSources[tag] = !seaState.expandedRepeatSources[tag];
+  renderExamsPageOnly();
+}
+
+function toggleSeaMergeConsecutive() {
+  seaState.mergeConsecutiveMonths = !seaState.mergeConsecutiveMonths;
+  renderExamsPageOnly();
+}
+
+function toggleSeaCompareCompleteOnly() {
+  seaState.compareOnlyComplete = !seaState.compareOnlyComplete;
+  renderExamsPageOnly();
+}
+
+function computeExamComparisonCycles(allExams, mergeConsecutive) {
+  const months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const chrono = allExams.slice().sort((a, b) => a.sortKey - b.sortKey);
+  const groups = [];
+
+  for (const ex of chrono) {
+    const ym = (ex.year * 12) + ex.month;
+    const prevG = groups[groups.length - 1];
+    let canJoin = false;
+    if (prevG) {
+      if (ym === prevG.endYm) {
+        canJoin = true;
+      } else if (mergeConsecutive && (ym - prevG.startYm) <= 1 && !(prevG.hasReal && ym > prevG.endYm)) {
+        canJoin = true;
+      }
+    }
+    if (!canJoin) {
+      groups.push({
+        startYm: ym,
+        endYm: ym,
+        startMonth: ex.month,
+        startYear: ex.year,
+        endMonth: ex.month,
+        endYear: ex.year,
+        hasReal: ex.typeCategory === "Real",
+        exams: [ex]
+      });
+    } else {
+      prevG.endYm = ym;
+      prevG.endMonth = ex.month;
+      prevG.endYear = ex.year;
+      if (ex.typeCategory === "Real") prevG.hasReal = true;
+      prevG.exams.push(ex);
+    }
+  }
+
+  return groups.map(g => {
+    const label = g.startYm === g.endYm
+      ? `${months[g.startMonth] || ("M" + g.startMonth)} ${g.startYear}`
+      : (g.startYear === g.endYear
+          ? `${months[g.startMonth]}–${months[g.endMonth]} ${g.endYear}`
+          : `${months[g.startMonth]} ${g.startYear} – ${months[g.endMonth]} ${g.endYear}`);
+
+    const trialExams = g.exams.filter(e => e.typeCategory === "Trial");
+    const simExams = g.exams.filter(e => e.typeCategory === "Simulation");
+    const realExams = g.exams.filter(e => e.typeCategory === "Real");
+    const typesPresentCount = (trialExams.length ? 1 : 0) + (simExams.length ? 1 : 0) + (realExams.length ? 1 : 0);
+    const totalCycleQs = g.exams.reduce((a, e) => a + e.totalQs, 0);
+
+    // Compute same-cycle direct overlap from earlier Trial/Sim/Demo/Mock in this round into this round's Real Exam
+    const sameCycleOverlaps = [];
+    const prepTagSet = new Set([...trialExams, ...simExams].map(e => e.tag));
+    realExams.forEach(rEx => {
+      rEx.priorRepeatStats.priorExamSources.forEach(src => {
+        if (prepTagSet.has(src.tag)) {
+          sameCycleOverlaps.push({
+            realTag: rEx.tag,
+            realTitle: rEx.fullTitle,
+            prepTag: src.tag,
+            prepLabel: src.typeLabel,
+            count: src.count,
+            pctStr: src.pctStr
+          });
+        }
+      });
+    });
+
+    const isMergedConsecutive = (g.startYm !== g.endYm);
+    const spanText = isMergedConsecutive
+      ? `${String(g.startMonth).padStart(2, '0')}/${g.startYear} + ${String(g.endMonth).padStart(2, '0')}/${g.endYear}`
+      : `${String(g.startMonth).padStart(2, '0')}/${g.startYear}`;
+
+    return {
+      label,
+      isMergedConsecutive,
+      spanText,
+      startYm: g.startYm,
+      endYm: g.endYm,
+      totalCycleQs,
+      typesPresentCount,
+      exams: g.exams,
+      trialExams,
+      simExams,
+      realExams,
+      sameCycleOverlaps
+    };
   });
-  if (!pool.length) {
-    showToast("No questions found for this selection.");
+}
+
+function launchExamQuestionPool(pool, title, mode, emptyToast) {
+  const playable = pool.filter(q => !q.is_locked);
+  if (playable.length === 0) {
+    showToast(emptyToast || "🔒 أسئلة هذا الجزء متاحة في النسخة الكاملة للمنصة (تواصل معنا عبر التليجرام للاشتراك).");
     return;
   }
-  state.customQs = pool.map(q => q.number);
-  state.examMode = false;
+  const isExamMode = (mode === "exam");
+  state.customQs = playable;
+  state.customExamTitle = title;
+  state.customExamReturnView = "exams";
+  state.examMode = isExamMode;
   state.examSubmitted = false;
   startQuiz("custom_exam");
-  const divObj = CORE_DIVISIONS.find(d => d.id === targetDivId);
-  const divSuffix = divObj ? ` (${divObj.title})` : "";
-  showToast(`🚀 Started ${meta.fullTitle}${divSuffix} (${pool.length} Questions)`);
-}
-
-function toggleSeaExamCard(tag, event) {
-  if (event) {
-    const target = event.target;
-    if (target.closest("button") || target.closest("select") || target.closest("input")) return;
+  if (playable.length < pool.length) {
+    showToast(`🚀 تم فتح ${playable.length} سؤال متاح مجاناً من ${title} (من أصل ${pool.length} سؤال — الباقي في النسخة الكاملة)`);
+  } else if (isExamMode) {
+    showToast(`⏱️ Exam Mode: ${title} (${playable.length} سؤال) — الإجابات تظهر بعد الضغط على Submit`);
+  } else {
+    showToast(`🚀 ${title} (${playable.length} سؤال — Tutor Mode)`);
   }
-  seaState.collapsedCards[tag] = !seaState.collapsedCards[tag];
-  renderSeparateExamSectionOnly();
 }
 
-function buildSeparateExamInnerHTML() {
+function practiceExamByTag(tag, targetChapId, modeOrEv, maybeEv) {
+  let mode = "tutor";
+  let ev = null;
+  if (typeof modeOrEv === "string") {
+    mode = modeOrEv;
+    ev = maybeEv || null;
+  } else {
+    ev = modeOrEv || null;
+  }
+  if (ev) ev.stopPropagation();
+
+  const cleanTarget = normalizeExamTag(tag);
+  let pool = DATA.questions.filter(q => (q.exam_tags || []).some(t => normalizeExamTag(t) === cleanTarget));
+  const meta = parseExamTagMeta(cleanTarget);
+  let title = meta.fullTitle;
+
+  if (targetChapId) {
+    pool = pool.filter(q => q.chapter_id === targetChapId);
+    title = `${meta.fullTitle} — ${getChapterTitle(targetChapId)}`;
+  }
+
+  launchExamQuestionPool(pool, title, mode);
+}
+
+function practiceExamRepeatSubset(tag, subsetType, priorTag, ev) {
+  if (ev) ev.stopPropagation();
+  const allExams = computeSeparateExamsData();
+  const targetExam = allExams.find(x => x.tag === normalizeExamTag(tag));
+  if (!targetExam) return;
+
+  const qByNum = {};
+  DATA.questions.forEach(q => { qByNum[q.number] = q; });
+
+  let subsetNums = [];
+  let title = targetExam.fullTitle;
+
+  if (subsetType === "repeated") {
+    subsetNums = targetExam.priorRepeatStats.repeatedQNums;
+    title = `${targetExam.fullTitle} — المتكرر من السنين السابقة`;
+  } else if (subsetType === "new") {
+    subsetNums = targetExam.priorRepeatStats.newQNums;
+    title = `${targetExam.fullTitle} — الأسئلة الجديدة فقط`;
+  } else if (subsetType === "source" && priorTag) {
+    const src = targetExam.priorRepeatStats.priorExamSources.find(s => s.tag === normalizeExamTag(priorTag));
+    if (!src) return;
+    subsetNums = src.qNums;
+    title = `المشترك بين ${targetExam.fullTitle} و ${src.fullTitle}`;
+  }
+
+  const pool = subsetNums.map(n => qByNum[n]).filter(Boolean);
+  launchExamQuestionPool(pool, title, "tutor");
+}
+
+function buildExamsPageInnerHTML() {
   const allExams = computeSeparateExamsData();
   const counts = {
     ALL: allExams.length,
-    Real: allExams.filter(e => e.filterCat === "Real").length,
-    Trial: allExams.filter(e => e.filterCat === "Trial").length,
-    Simulation: allExams.filter(e => e.filterCat === "Simulation").length
+    Real: allExams.filter(e => e.typeCategory === "Real").length,
+    Trial: allExams.filter(e => e.typeCategory === "Trial").length,
+    Simulation: allExams.filter(e => e.typeCategory === "Simulation").length
   };
 
-  let filtered = allExams.filter(e => {
-    if (seaState.filter !== "ALL" && e.filterCat !== seaState.filter) return false;
-    if (seaState.search.trim()) {
-      const q = seaState.search.trim().toLowerCase();
-      const hay = `${e.fullTitle} ${e.compactTitle} ${e.tag} ${e.dateStr}`.toLowerCase();
-      if (!hay.includes(q)) return false;
+  const qStr = (seaState.search || "").trim().toLowerCase();
+  const filtered = allExams.filter(ex => {
+    if (seaState.filter !== "ALL" && ex.typeCategory !== seaState.filter) return false;
+    if (qStr) {
+      const hay = `${ex.tag} ${ex.fullTitle} ${ex.typeLabel} ${ex.year}`.toLowerCase();
+      if (!hay.includes(qStr)) return false;
     }
     return true;
   });
 
-  if (seaState.sortBy === "oldest") {
-    filtered = filtered.slice().sort((a, b) => a.sortKey - b.sortKey || b.totalQs - a.totalQs);
-  } else if (seaState.sortBy === "most_qs") {
-    filtered = filtered.slice().sort((a, b) => b.totalQs - a.totalQs || b.sortKey - a.sortKey);
-  } else {
-    // Newest to Oldest
-    filtered = filtered.slice().sort((a, b) => b.sortKey - a.sortKey || b.totalQs - a.totalQs);
-  }
-
-  const totalQuestionsInFiltered = filtered.reduce((acc, e) => acc + e.totalQs, 0);
-  const avgQsPerExam = filtered.length ? Math.round(totalQuestionsInFiltered / filtered.length) : 0;
-  const newestExam = filtered.length ? allExams.filter(e => seaState.filter === "ALL" || e.filterCat === seaState.filter)[0] : null;
-  const oldestList = allExams.filter(e => seaState.filter === "ALL" || e.filterCat === seaState.filter);
-  const oldestExam = oldestList.length ? oldestList[oldestList.length - 1] : null;
+  const sortedNewest = allExams.slice().sort((a, b) => b.sortKey - a.sortKey);
+  const newestExam = sortedNewest[0];
+  const oldestExam = sortedNewest[sortedNewest.length - 1];
+  const customOverridesCount = Object.values(seaState.cardAnalysisMode || {}).filter(m => m && m !== "none").length;
 
   return `
-    <div class="sea-controls-bar">
-      <div class="sea-filter-pills">
-        <span style="font-size:12px; font-weight:700; color:var(--text-muted); margin-right:4px;">Filter Type:</span>
-        <button class="sea-filter-btn ${seaState.filter === 'ALL' ? 'active-sea-filter' : ''}" onclick="setSeaFilter('ALL')">
-          ALL <span class="sea-pill-cnt">${counts.ALL}</span>
-        </button>
-        <button class="sea-filter-btn ${seaState.filter === 'Real' ? 'active-sea-filter' : ''}" onclick="setSeaFilter('Real')">
-          Real <span class="sea-pill-cnt">${counts.Real}</span>
-        </button>
-        <button class="sea-filter-btn ${seaState.filter === 'Trial' ? 'active-sea-filter' : ''}" onclick="setSeaFilter('Trial')">
-          Trial <span class="sea-pill-cnt">${counts.Trial}</span>
-        </button>
-        <button class="sea-filter-btn ${seaState.filter === 'Simulation' ? 'active-sea-filter' : ''}" onclick="setSeaFilter('Simulation')" title="Includes Simulation, Mock & Demo Exams">
-          Simulation / Mock / Demo <span class="sea-pill-cnt">${counts.Simulation}</span>
-        </button>
-      </div>
-
-      <div class="sea-right-tools">
-        <input type="text" class="sea-search-input" id="seaSearchBox" placeholder="🔍 Search exam (e.g. 7/2026, 10/2020)..." value="${seaState.search.replace(/"/g, '&quot;')}" oninput="onSeaSearchInput(this.value)" />
-        <select class="sea-search-input" style="min-width:175px; font-weight:600; cursor:pointer;" onchange="setSeaSort(this.value)">
-          <option value="newest" ${seaState.sortBy === 'newest' ? 'selected' : ''}>⬇ Sort: Newest to Oldest</option>
-          <option value="oldest" ${seaState.sortBy === 'oldest' ? 'selected' : ''}>⬆ Sort: Oldest to Newest</option>
-          <option value="most_qs" ${seaState.sortBy === 'most_qs' ? 'selected' : ''}>📊 Sort: Most Questions First</option>
-        </select>
-        <button class="btn-outline" style="padding:6px 12px; font-size:12px;" onclick="toggleAllSeaCards(false)">Expand All</button>
-        <button class="btn-outline" style="padding:6px 12px; font-size:12px;" onclick="toggleAllSeaCards(true)">Collapse All</button>
-      </div>
-    </div>
-
-    <div class="sea-summary-strip">
+    <div class="sea-summary-strip" style="margin-bottom:14px;">
       <div class="sea-sum-box">
-        <div class="sea-sum-lbl">Showing Exams (${seaState.filter === 'Simulation' ? 'Simulation / Mock / Demo' : seaState.filter})</div>
+        <div class="sea-sum-lbl">Total EMLE Exams</div>
+        <div class="sea-sum-val">${allExams.length} Exams</div>
+      </div>
+      <div class="sea-sum-box">
+        <div class="sea-sum-lbl">Currently Showing</div>
         <div class="sea-sum-val" style="color:var(--teal);">${filtered.length} Exams</div>
       </div>
       <div class="sea-sum-box">
-        <div class="sea-sum-lbl">Total Exam Questions</div>
-        <div class="sea-sum-val">${totalQuestionsInFiltered.toLocaleString()} Qs <span style="font-size:12px; font-weight:600; color:var(--text-muted);">(~${avgQsPerExam} Q/exam)</span></div>
-      </div>
-      <div class="sea-sum-box">
-        <div class="sea-sum-lbl">Newest Exam in Filter</div>
+        <div class="sea-sum-lbl">Latest Exam</div>
         <div class="sea-sum-val" style="font-size:15px;">${newestExam ? `${newestExam.fullTitle} (${newestExam.totalQs} Qs)` : '—'}</div>
       </div>
       <div class="sea-sum-box">
-        <div class="sea-sum-lbl">Oldest Exam in Filter</div>
+        <div class="sea-sum-lbl">Oldest Exam</div>
         <div class="sea-sum-val" style="font-size:15px;">${oldestExam ? `${oldestExam.fullTitle} (${oldestExam.totalQs} Qs)` : '—'}</div>
       </div>
     </div>
 
+    <!-- Controls Bar: Filter by Exam Type + Search + Sort -->
+    <div class="analysis-card" style="margin-bottom:14px; padding:14px 16px;">
+      <div class="sea-controls-bar" style="margin-bottom:12px;">
+        <div class="sea-filter-group">
+          <button class="sea-filter-btn ${seaState.filter === 'ALL' ? 'active-sea-filter' : ''}" onclick="setSeaFilter('ALL')">
+            All Exams <span class="sea-pill-cnt">${counts.ALL}</span>
+          </button>
+          <button class="sea-filter-btn ${seaState.filter === 'Real' ? 'active-sea-filter' : ''}" onclick="setSeaFilter('Real')">
+            Real (فعلي) <span class="sea-pill-cnt">${counts.Real}</span>
+          </button>
+          <button class="sea-filter-btn ${seaState.filter === 'Trial' ? 'active-sea-filter' : ''}" onclick="setSeaFilter('Trial')">
+            Trial (تجريبي) <span class="sea-pill-cnt">${counts.Trial}</span>
+          </button>
+          <button class="sea-filter-btn ${seaState.filter === 'Simulation' ? 'active-sea-filter' : ''}" onclick="setSeaFilter('Simulation')" title="Simulation + Mock + Demo">
+            Simulation (محاكاة) <span class="sea-pill-cnt">${counts.Simulation}</span>
+          </button>
+        </div>
+
+        <div class="sea-right-tools">
+          <input
+            type="text"
+            id="seaSearchBox"
+            class="sea-search-input"
+            placeholder="🔍 Search exam (e.g. 2025, 7/2026, Real)..."
+            value="${escapeAttr(seaState.search)}"
+            oninput="onSeaSearchInput(this.value)"
+          />
+          <select class="sea-search-input" style="min-width:165px;" onchange="setSeaSort(this.value)">
+            <option value="newest" ${seaState.sortBy === 'newest' ? 'selected' : ''}>Sort: Newest &rarr; Oldest</option>
+            <option value="oldest" ${seaState.sortBy === 'oldest' ? 'selected' : ''}>Sort: Oldest &rarr; Newest</option>
+            <option value="most_qs" ${seaState.sortBy === 'most_qs' ? 'selected' : ''}>Sort: Most Questions</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Optional Analysis Toggle Bar (Hidden by default, Single Row) -->
+      <div class="sea-analysis-bar" dir="rtl" style="margin-bottom:0;">
+        <div class="sea-analysis-btns">
+          <button class="sea-amode-btn ${seaState.analysisMode === 'none' && customOverridesCount === 0 ? 'active-amode' : ''}" onclick="setSeaAnalysisMode('none')">
+            🙈 إخفاء كل التحليلات
+          </button>
+          <button class="sea-amode-btn ${seaState.analysisMode === 'chapters' ? 'active-amode' : ''}" onclick="setSeaAnalysisMode('chapters')">
+            📊 شوف كل امتحان جه فيه كام سؤال من كل شابتر
+          </button>
+          <button class="sea-amode-btn ${seaState.analysisMode === 'repeats' ? 'active-amode' : ''}" onclick="setSeaAnalysisMode('repeats')">
+            🔁 شوف كل امتحان اتكرر منه كم سؤال من الامتحانات السابقة له
+          </button>
+          <button class="sea-amode-btn ${seaState.analysisMode === 'compare' ? 'active-amode' : ''}" onclick="setSeaAnalysisMode('compare')">
+            ⚖️ قارن بين نسب تكرار الامتحانات الفعلية والتجريبية والمحاكاة لنفس الدور
+          </button>
+        </div>
+      </div>
+
+      <div class="sea-dr-note-bar" dir="rtl">
+        <div class="sea-dr-note-text">
+          <strong>ℹ️ ملحوظة:</strong> المنصة هنا بتتعامل مع الامتحان الأول والثاني (والثالث إن وجد) على إنهم امتحان واحد، لذلك ممكن أحياناً تلاقي بعض الامتحانات فيها 200 أو 300 سؤال. لو عاوز تشوف كل امتحان بالتفصيل <strong>أول / ثاني / ثالث</strong> اتكرر منه كام سؤال، فتقدر تشوفها من هنا من إحصائية د. أحمد عامر:
+        </div>
+        <button class="sea-dr-stat-btn" onclick="openDrAhmedStatsModal()">
+          📊 إحصائية د. أحمد عامر
+        </button>
+      </div>
+    </div>
+
+    ${seaState.analysisMode === 'compare' ? buildCyclesComparisonHTML(allExams) : `
     <div class="sea-exams-list">
       ${filtered.length === 0 ? `
-        <div style="padding:28px; text-align:center; color:var(--text-muted); font-size:14px;">
+        <div class="analysis-card" style="padding:28px; text-align:center; color:var(--text-muted); font-size:14px;">
           No exams match your current filter/search.
         </div>
       ` : filtered.map((ex, idx) => {
-        const isCollapsed = !!seaState.collapsedCards[ex.tag];
-        const maxDivCount = ex.divisionsBreakdown.length ? Math.max(...ex.divisionsBreakdown.map(d => d.count), 1) : 1;
+        const effectiveMode = seaState.cardAnalysisMode[ex.tag] || seaState.analysisMode || "none";
+        let solvedInExam = 0;
+        let playableInExam = 0;
+        ex.qObjs.forEach(q => {
+          if (!q.is_locked) playableInExam++;
+          const st = state.qStatus[q.number];
+          if (st && st.status) solvedInExam++;
+        });
 
-        return `
-          <div class="sea-exam-card">
-            <div class="sea-exam-header" onclick="toggleSeaExamCard('${ex.tag}', event)">
-              <div class="sea-exam-title-wrap">
-                <span class="sea-rank-num">#${idx + 1}</span>
-                <span class="sea-exam-name">${ex.fullTitle}</span>
-                <span class="sea-type-badge ${ex.badgeClass}">${ex.typeLabel}</span>
-                <span style="font-size:12px; color:var(--text-muted); font-family:monospace;">(${ex.tag})</span>
-              </div>
-              <div class="sea-exam-actions">
-                <span class="sea-chap-count-lbl" style="color:var(--teal); font-weight:700;">5 Core Subjects</span>
-                <span class="sea-total-q-pill">${ex.totalQs} Questions</span>
-                <button class="btn-teal" style="padding:5px 12px; font-size:12px;" onclick="practiceExamByTag('${ex.tag}', null, event)" title="Practice all ${ex.totalQs} questions from ${ex.fullTitle}">
-                  🚀 Practice Exam (${ex.totalQs} Qs)
-                </button>
-                <span style="font-size:12px; color:var(--text-muted); font-weight:700; min-width:18px; text-align:center;">
-                  ${isCollapsed ? '&#9654;' : '&#9660;'}
-                </span>
-              </div>
-            </div>
-
-            ${isCollapsed ? '' : `
+        let bodyHTML = "";
+        if (effectiveMode === "chapters") {
+          const maxChapCount = ex.chaptersBreakdown.length ? Math.max(...ex.chaptersBreakdown.map(c => c.count), 1) : 1;
+          bodyHTML = `
             <div class="sea-exam-body">
-              <!-- 5 Core Subjects Stacked Percentage Bar -->
-              <div class="sea-stacked-bar" title="Subject distribution across ${ex.totalQs} questions" style="height:10px; border-radius:6px; overflow:hidden; display:flex; margin-bottom:14px; background:#e2e8f0;">
-                ${ex.divisionsBreakdown.filter(d => d.count > 0).map(d => `
-                  <div style="width:${d.pct}%; background:${d.color}; height:100%;" title="${d.title}: ${d.count} Qs (${d.pctStr}%)"></div>
+              <div class="sea-body-hint" dir="rtl">
+                <span>📊 تقسيمة الامتحان حسب الشباتر — <strong>${ex.totalQs} سؤال</strong> موزعة على <strong>${ex.chaptersBreakdown.length} شابتر</strong> (اضغط على أي شابتر لحل أسئلته من هذا الامتحان):</span>
+              </div>
+              <div class="sea-stacked-bar" title="Chapter distribution across ${ex.totalQs} questions">
+                ${ex.chaptersBreakdown.map(c => `
+                  <div style="width:${c.pct}%; background:${c.color}; height:100%;" title="${c.title}: ${c.count} Qs (${c.pctStr}%)"></div>
                 `).join("")}
               </div>
-
-              <!-- Clean 5 Core Subjects Grid -->
-              <div class="sea-chap-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px 16px;">
-                ${ex.divisionsBreakdown.map((d, dIdx) => {
-                  const barW = Math.round((d.count / maxDivCount) * 100);
+              <div class="sea-chap-grid">
+                ${ex.chaptersBreakdown.map((c, cIdx) => {
+                  const barW = Math.round((c.count / maxChapCount) * 100);
                   return `
-                    <div class="sea-chap-row" style="display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border-subtle, #f1f5f9); font-size:13px;">
-                      <div class="sea-chap-name" style="font-weight:700; color:var(--text); min-width:150px;">
-                        ${dIdx + 1}. ${d.title}
+                    <div class="sea-chap-row" style="cursor:pointer;" onclick="practiceExamByTag('${ex.tag}', '${c.id}', 'tutor', event)" title="اضغط لحل ${c.count} سؤال ${c.title} من امتحان ${ex.fullTitle}">
+                      <div class="sea-chap-name" style="display:flex; align-items:center; gap:6px;">
+                        <span class="sea-chap-dot" style="background:${c.color};"></span>
+                        <span>${cIdx + 1}. ${c.title}</span>
                       </div>
-                      <div class="cbr-track" title="${d.count} of ${ex.totalQs} questions (${d.pctStr}%)" style="flex:1; height:7px; background:#e2e8f0; border-radius:4px; overflow:hidden; margin:0 12px;">
-                        <div class="cbr-fill" style="width:${barW}%; background:${d.color}; height:100%; border-radius:4px;"></div>
+                      <div class="cbr-track" title="${c.count} of ${ex.totalQs} questions (${c.pctStr}%)">
+                        <div class="cbr-fill" style="width:${barW}%; background:${c.color};"></div>
                       </div>
-                      <div class="sea-chap-stat" style="cursor:pointer; font-weight:700; white-space:nowrap;" onclick="practiceExamByTag('${ex.tag}', '${d.id}', event)" title="Click to practice ${d.count} ${d.title} questions from ${ex.fullTitle}">
-                        ${d.count} Qs <span class="sea-chap-pct" style="color:${d.color}; font-weight:800;">(${d.pctStr}%)</span>
+                      <div class="sea-chap-stat">
+                        ${c.count} Qs <span class="sea-chap-pct" style="color:${c.color};">(${c.pctStr}%)</span>
                       </div>
                     </div>
                   `;
                 }).join("")}
               </div>
             </div>
-            `}
+          `;
+        } else if (effectiveMode === "repeats") {
+          const rs = ex.priorRepeatStats;
+          const maxOverlap = rs.priorExamSources.length ? Math.max(...rs.priorExamSources.map(s => s.count), 1) : 1;
+          bodyHTML = `
+            <div class="sea-exam-body" dir="rtl">
+              <div class="sea-type2-kpis">
+                <div class="sea-t2-kpi kpi-repeat">
+                  <div class="sea-t2-lbl">🔁 متكرر من الامتحانات السابقة له فقط</div>
+                  <div class="sea-t2-val" style="color:var(--teal);">${rs.repeatedCount} سؤال <span style="font-size:13px; font-weight:700;">(${rs.repeatedPctStr}%)</span></div>
+                  ${rs.repeatedCount > 0 ? `
+                    <button class="sea-t2-btn" onclick="practiceExamRepeatSubset('${ex.tag}', 'repeated', null, event)">
+                      🚀 حل المتكرر فقط (${rs.repeatedCount})
+                    </button>
+                  ` : `<span style="font-size:11.5px; color:var(--text-muted);">لا توجد أسئلة مكررة أقدم منه</span>`}
+                </div>
+                <div class="sea-t2-kpi kpi-new">
+                  <div class="sea-t2-lbl">✨ أسئلة جديدة (أول ظهور بهذا الامتحان)</div>
+                  <div class="sea-t2-val" style="color:#b45309;">${rs.newCount} سؤال <span style="font-size:13px; font-weight:700;">(${rs.newPctStr}%)</span></div>
+                  ${rs.newCount > 0 ? `
+                    <button class="sea-t2-btn" style="border-color:#d97706; color:#b45309;" onclick="practiceExamRepeatSubset('${ex.tag}', 'new', null, event)">
+                      ✨ حل الجديدة فقط (${rs.newCount})
+                    </button>
+                  ` : ''}
+                </div>
+                <div class="sea-t2-kpi">
+                  <div class="sea-t2-lbl">📚 الامتحانات الأقدم التي اتكرر منها أسئلة</div>
+                  <div class="sea-t2-val">${rs.priorExamSources.length} <span style="font-size:13px; font-weight:600; color:var(--text-muted);">من أصل ${rs.priorExamsCount} امتحان سابق له</span></div>
+                  <div style="font-size:11px; color:var(--text-muted); line-height:1.35;">يُحسب فقط التكرار من امتحانات بتاريخ أقدم من هذا الامتحان</div>
+                </div>
+              </div>
+
+              ${rs.priorExamsCount === 0 ? `
+                <div style="padding:10px 12px; border-radius:6px; background:var(--surface-subtle); font-size:12.5px; color:var(--text-secondary);">
+                  هذا أقدم امتحان متاح في القاعدة، لذا جميع أسئلته (${ex.totalQs} سؤال) تُعتبر أول ظهور ولا توجد امتحانات أقدم منه للمقارنة.
+                </div>
+              ` : rs.priorExamSources.length === 0 ? `
+                <div style="padding:10px 12px; border-radius:6px; background:var(--surface-subtle); font-size:12.5px; color:var(--text-secondary);">
+                  لم يتكرر في هذا الامتحان أي سؤال من الامتحانات الأقدم منه (${rs.priorExamsCount} امتحان سابق).
+                </div>
+              ` : (() => {
+                const isSourcesExpanded = !!seaState.expandedRepeatSources[ex.tag];
+                return `
+                  <div class="sea-sources-collapse-wrap">
+                    <button class="sea-sources-toggle-btn ${isSourcesExpanded ? 'expanded' : ''}" onclick="toggleRepeatSourcesCollapse('${ex.tag}', event)">
+                      <span>${isSourcesExpanded ? '🔼 إخفاء تفصيل الامتحانات الأقدم' : '📋 إظهار تفصيل الامتحانات الأقدم (كل امتحان أقدم اتكرر منه كام سؤال)'}</span>
+                      <span class="sea-pill-cnt">${rs.priorExamSources.length} امتحان</span>
+                    </button>
+                  </div>
+                  ${isSourcesExpanded ? `
+                    <div class="sea-body-hint" style="margin-top:10px;">
+                      <span>تفصيل كل امتحان أقدم منه اتكرر منه كام سؤال (اضغط على أي امتحان سابق لحل الأسئلة المشتركة معه):</span>
+                    </div>
+                    <div class="sea-type2-sources-grid" dir="ltr">
+                      ${rs.priorExamSources.map((src, sIdx) => {
+                        const barW = Math.round((src.count / maxOverlap) * 100);
+                        return `
+                          <div class="sea-repeat-row" onclick="practiceExamRepeatSubset('${ex.tag}', 'source', '${src.tag}', event)" title="Click to solve the ${src.count} shared questions with ${src.fullTitle}">
+                            <div class="sea-chap-name" style="display:flex; align-items:center; gap:6px;">
+                              <span style="color:var(--text-muted); font-size:11px; font-weight:700;">${sIdx + 1}.</span>
+                              <span>${src.fullTitle}</span>
+                            </div>
+                            <div class="cbr-track" title="${src.count} repeated questions from ${src.fullTitle}">
+                              <div class="cbr-fill" style="width:${barW}%; background:var(--teal);"></div>
+                            </div>
+                            <div class="sea-chap-stat">
+                              ${src.count} Qs <span class="sea-chap-pct">(${src.pctStr}%)</span>
+                            </div>
+                          </div>
+                        `;
+                      }).join("")}
+                    </div>
+                    <div style="margin-top:8px; font-size:11.5px; color:var(--text-muted);">
+                      ملاحظة: قد يظهر السؤال الواحد في أكثر من امتحان سابق، لذلك عدد "الأسئلة المتكررة الفريدة" (${rs.repeatedCount} سؤال) يحسب كل سؤال مكرر مرة واحدة فقط إذا سبق ظهوره في أي امتحان أقدم.
+                    </div>
+                  ` : ''}
+                `;
+              })()}
+            </div>
+          `;
+        }
+
+        return `
+          <div class="sea-exam-card">
+            <div class="sea-exam-header" style="cursor:default;">
+              <div class="sea-exam-title-wrap">
+                <span class="sea-rank-num">#${idx + 1}</span>
+                <span class="sea-exam-name">${ex.fullTitle}</span>
+                <span class="sea-type-badge ${ex.badgeClass}">${ex.typeLabel}</span>
+                <span style="font-size:12px; color:var(--text-muted); font-family:monospace;">(${ex.tag})</span>
+                ${solvedInExam > 0 ? `<span class="sea-solved-pill">&check; ${solvedInExam}/${ex.totalQs} solved</span>` : ''}
+              </div>
+              <div class="sea-exam-actions">
+                <span class="sea-total-q-pill">${ex.totalQs} Qs</span>
+                <div class="sea-card-mini-toggles" title="إظهار أو إخفاء التحليل لهذا الامتحان">
+                  <button class="sea-mini-btn ${effectiveMode === 'chapters' ? 'active-mini' : ''}" onclick="toggleCardSeaAnalysis('${ex.tag}', 'chapters', event)">
+                    📊 التقسيمة
+                  </button>
+                  <button class="sea-mini-btn ${effectiveMode === 'repeats' ? 'active-mini' : ''}" onclick="toggleCardSeaAnalysis('${ex.tag}', 'repeats', event)">
+                    🔁 التكرارات
+                  </button>
+                </div>
+                <button class="sea-exam-mode-btn" onclick="practiceExamByTag('${ex.tag}', null, 'exam', event)" title="محاكاة امتحان: إخفاء الإجابات والنتيجة حتى التسليم">
+                  ⏱️ Exam Mode
+                </button>
+                <button class="btn-teal" style="padding:5px 12px; font-size:12px;" onclick="practiceExamByTag('${ex.tag}', null, 'tutor', event)" title="حل الامتحان بالكامل بنظام الشرح والتصحيح الفوري">
+                  🚀 حل الامتحان (${playableInExam < ex.totalQs && playableInExam > 0 ? `${playableInExam} متاح / ${ex.totalQs}` : `${ex.totalQs} Qs`})
+                </button>
+              </div>
+            </div>
+            ${bodyHTML}
+          </div>
+        `;
+      }).join("")}
+    </div>
+    `}
+  `;
+}
+
+function buildCycleColumnSlotsHTML(examsList, emptyMsg) {
+  if (!examsList || examsList.length === 0) {
+    return `<div style="font-size:12px; color:var(--text-muted); padding:8px 4px; text-align:center;">${emptyMsg}</div>`;
+  }
+  return examsList.map(ex => {
+    const rs = ex.priorRepeatStats;
+    return `
+      <div class="sea-cmp-slot">
+        <div class="sea-cmp-slot-top">
+          <span>${ex.typeLabel} (<span style="font-family:monospace;">${ex.tag}</span>)</span>
+          <span style="color:var(--teal);">${ex.totalQs} Qs</span>
+        </div>
+        <div class="sea-cmp-bar-track" title="متكرر: ${rs.repeatedPctStr}% | جديد: ${rs.newPctStr}%">
+          <div class="sea-cmp-bar-rep" style="width:${rs.repeatedPctStr}%;"></div>
+        </div>
+        <div class="sea-cmp-slot-metrics">
+          <span style="color:var(--teal);">🔁 ${rs.repeatedPctStr}% <span style="font-weight:500; color:var(--text-muted);">(${rs.repeatedCount})</span></span>
+          <span style="color:#b45309;">✨ ${rs.newPctStr}% <span style="font-weight:500; color:var(--text-muted);">(${rs.newCount})</span></span>
+        </div>
+        <div class="sea-cmp-slot-btns">
+          <button class="sea-mini-btn" style="border:1px solid var(--border);" onclick="practiceExamByTag('${ex.tag}', null, 'tutor', event)">🚀 حل</button>
+          <button class="sea-mini-btn" style="border:1px solid var(--border);" onclick="practiceExamByTag('${ex.tag}', null, 'exam', event)">⏱️ Exam</button>
+          ${rs.repeatedCount > 0 ? `<button class="sea-mini-btn" style="border:1px solid #99f6e4; color:var(--teal);" onclick="practiceExamRepeatSubset('${ex.tag}', 'repeated', null, event)">🔁 المتكرر (${rs.repeatedCount})</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function buildCyclesComparisonHTML(allExams) {
+  const allCycles = computeExamComparisonCycles(allExams, seaState.mergeConsecutiveMonths);
+  const qStr = (seaState.search || "").trim().toLowerCase();
+
+  let filteredCycles = allCycles.filter(c => {
+    if (seaState.compareOnlyComplete && c.typesPresentCount < 2) return false;
+    if (qStr) {
+      const hay = (c.label + " " + c.spanText + " " + c.exams.map(e => `${e.tag} ${e.fullTitle} ${e.typeLabel} ${e.year}`).join(" ")).toLowerCase();
+      if (!hay.includes(qStr)) return false;
+    }
+    return true;
+  });
+
+  if (seaState.sortBy === "oldest") {
+    filteredCycles.sort((a, b) => a.startYm - b.startYm);
+  } else if (seaState.sortBy === "most_qs") {
+    filteredCycles.sort((a, b) => b.totalCycleQs - a.totalCycleQs || b.endYm - a.endYm);
+  } else {
+    filteredCycles.sort((a, b) => b.endYm - a.endYm);
+  }
+
+  const calcWeightedAvg = (examsArr) => {
+    let rep = 0, tot = 0;
+    examsArr.forEach(e => { rep += e.priorRepeatStats.repeatedCount; tot += e.totalQs; });
+    return { count: examsArr.length, rep, tot, pctStr: tot > 0 ? ((rep / tot) * 100).toFixed(1) : "0.0" };
+  };
+  const visibleExams = [];
+  filteredCycles.forEach(c => c.exams.forEach(e => visibleExams.push(e)));
+  const avgTrial = calcWeightedAvg(visibleExams.filter(e => e.typeCategory === "Trial"));
+  const avgSim = calcWeightedAvg(visibleExams.filter(e => e.typeCategory === "Simulation"));
+  const avgReal = calcWeightedAvg(visibleExams.filter(e => e.typeCategory === "Real"));
+
+  const cycleAvgTag = (arr) => {
+    if (!arr.length) return null;
+    let r = 0, t = 0;
+    arr.forEach(e => { r += e.priorRepeatStats.repeatedCount; t += e.totalQs; });
+    return t > 0 ? ((r / t) * 100).toFixed(1) : "0.0";
+  };
+
+  return `
+    <div class="sea-cmp-toolbar" dir="rtl">
+      <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+        <button class="sea-cmp-toggle-pill ${seaState.mergeConsecutiveMonths ? 'active-cmp-pill' : ''}" onclick="toggleSeaMergeConsecutive()">
+          <span>${seaState.mergeConsecutiveMonths ? '✅' : '⬜'}</span>
+          <span>دمج الشهور المتتالية في نفس الدورة (مثل Nov–Dec 2025 و May–Jun 2023)</span>
+        </button>
+        <button class="sea-cmp-toggle-pill ${seaState.compareOnlyComplete ? 'active-cmp-pill' : ''}" onclick="toggleSeaCompareCompleteOnly()">
+          <span>${seaState.compareOnlyComplete ? '✅' : '⬜'}</span>
+          <span>الدورات التي بها أكثر من نوع فقط</span>
+        </button>
+      </div>
+      <div style="font-size:12px; font-weight:700; color:var(--text-muted);">
+        عرض ${filteredCycles.length} ${seaState.mergeConsecutiveMonths ? 'دورة امتحانية' : 'شهر'}
+      </div>
+    </div>
+
+    <div class="sea-cmp-avg-strip" dir="rtl">
+      <div class="sea-cmp-avg-box col-real">
+        <div class="sea-sum-lbl">🏛️ متوسط التكرار في الفعلي (Real)</div>
+        <div class="sea-sum-val" style="color:#0369a1;">${avgReal.pctStr}% <span style="font-size:12px; font-weight:600; color:var(--text-muted);">(${avgReal.count} امتحان &bull; ${avgReal.rep}/${avgReal.tot} Qs)</span></div>
+      </div>
+      <div class="sea-cmp-avg-box col-trial">
+        <div class="sea-sum-lbl">🧪 متوسط التكرار في التجريبي (Trial)</div>
+        <div class="sea-sum-val" style="color:#15803d;">${avgTrial.pctStr}% <span style="font-size:12px; font-weight:600; color:var(--text-muted);">(${avgTrial.count} امتحان &bull; ${avgTrial.rep}/${avgTrial.tot} Qs)</span></div>
+      </div>
+      <div class="sea-cmp-avg-box col-sim">
+        <div class="sea-sum-lbl">🎯 متوسط التكرار في المحاكاة (Demo / Mock / Sim)</div>
+        <div class="sea-sum-val" style="color:#6d28d9;">${avgSim.pctStr}% <span style="font-size:12px; font-weight:600; color:var(--text-muted);">(${avgSim.count} امتحان &bull; ${avgSim.rep}/${avgSim.tot} Qs)</span></div>
+      </div>
+    </div>
+
+    <div class="sea-exams-list">
+      ${filteredCycles.length === 0 ? `
+        <div class="analysis-card" style="padding:28px; text-align:center; color:var(--text-muted); font-size:14px;">
+          لا توجد دورات مطابقة لبحثك الحالي.
+        </div>
+      ` : filteredCycles.map((c, idx) => {
+        const tPct = cycleAvgTag(c.trialExams);
+        const sPct = cycleAvgTag(c.simExams);
+        const rPct = cycleAvgTag(c.realExams);
+        return `
+          <div class="sea-cmp-card">
+            <div class="sea-cmp-header">
+              <div class="sea-exam-title-wrap">
+                <span class="sea-rank-num">#${idx + 1}</span>
+                <span class="sea-exam-name">${c.label}</span>
+                ${c.isMergedConsecutive ? `<span class="sea-type-badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a;">شهرين متتاليين (${c.spanText})</span>` : ''}
+                <span style="font-size:12px; color:var(--text-muted); font-weight:600;">${c.exams.length} exams &bull; ${c.totalCycleQs} Qs</span>
+              </div>
+              <div class="sea-cmp-quick-pills" dir="rtl">
+                ${rPct !== null ? `<span class="sea-cmp-qpill q-real">🏛️ فعلي: ${rPct}%</span>` : ''}
+                ${tPct !== null ? `<span class="sea-cmp-qpill q-trial">🧪 تجريبي: ${tPct}%</span>` : ''}
+                ${sPct !== null ? `<span class="sea-cmp-qpill q-sim">🎯 محاكاة: ${sPct}%</span>` : ''}
+              </div>
+            </div>
+
+            <div class="sea-cmp-cols" dir="rtl">
+              <div class="sea-cmp-col col-real">
+                <div class="sea-cmp-col-title">
+                  <span>🏛️ الفعلي (Real)</span>
+                  <span style="font-size:11px; color:var(--text-muted);">${c.realExams.length}</span>
+                </div>
+                ${buildCycleColumnSlotsHTML(c.realExams, "لا يوجد امتحان فعلي")}
+              </div>
+              <div class="sea-cmp-col col-trial">
+                <div class="sea-cmp-col-title">
+                  <span>🧪 التجريبي (Trial)</span>
+                  <span style="font-size:11px; color:var(--text-muted);">${c.trialExams.length}</span>
+                </div>
+                ${buildCycleColumnSlotsHTML(c.trialExams, "لا يوجد امتحان تجريبي")}
+              </div>
+              <div class="sea-cmp-col col-sim">
+                <div class="sea-cmp-col-title">
+                  <span>🎯 المحاكاة (Demo / Mock / Sim)</span>
+                  <span style="font-size:11px; color:var(--text-muted);">${c.simExams.length}</span>
+                </div>
+                ${buildCycleColumnSlotsHTML(c.simExams, "لا يوجد امتحان محاكاة")}
+              </div>
+            </div>
+
+            ${c.sameCycleOverlaps.length > 0 ? `
+              <div class="sea-cmp-overlap-bar" dir="rtl">
+                <span>📌 أسئلة الامتحان الفعلي المتكررة مباشرة من تجريبي/محاكاة نفس الدورة:</span>
+                ${c.sameCycleOverlaps.map(ov => `
+                  <button class="sea-mini-btn" style="border:1px solid var(--teal); background:var(--surface); color:var(--teal);" onclick="practiceExamRepeatSubset('${ov.realTag}', 'source', '${ov.prepTag}', event)" title="اضغط لحل الأسئلة المشتركة بين ${ov.realTag} و ${ov.prepTag}">
+                    ${ov.realTag} ← ${ov.prepTag}: ${ov.count} سؤال (${ov.pctStr}%)
+                  </button>
+                `).join("")}
+              </div>
+            ` : ''}
           </div>
         `;
       }).join("")}
@@ -5804,15 +7086,15 @@ function buildSeparateExamInnerHTML() {
   `;
 }
 
-function renderSeparateExamSectionOnly() {
-  const wrap = document.getElementById("separateExamAnalysisContent");
+function renderExamsPageOnly() {
+  const wrap = document.getElementById("examsPageContainer");
   if (!wrap) return;
   const activeEl = document.activeElement;
   const wasFocused = activeEl && activeEl.id === "seaSearchBox";
   const selStart = wasFocused ? activeEl.selectionStart : null;
   const selEnd = wasFocused ? activeEl.selectionEnd : null;
 
-  wrap.innerHTML = buildSeparateExamInnerHTML();
+  wrap.innerHTML = buildExamsPageInnerHTML();
 
   if (wasFocused) {
     const newBox = document.getElementById("seaSearchBox");
@@ -5825,11 +7107,14 @@ function renderSeparateExamSectionOnly() {
   }
 }
 
+function renderExamsPage() {
+  renderExamsPageOnly();
+}
+
 function renderAnalyticsPage() {
   const container = document.getElementById("analyticsPageContainer");
   if (!container) return;
 
-  const totalUnique = DATA.questions.length;
   const totalWeighted = DATA.topics.reduce((acc, t) => acc + (t.weighted_freq || t.q_count || 0), 0);
   const hyTopics = DATA.topics.filter(t => t.yield_tier === "high");
   const myTopics = DATA.topics.filter(t => t.yield_tier === "medium");
@@ -5844,7 +7129,6 @@ function renderAnalyticsPage() {
   const lyPct = ((lyWeight / totalWeighted) * 100).toFixed(1);
   const target90Pct = (((hyWeight + myWeight) / totalWeighted) * 100).toFixed(1);
 
-  // Compute Chapter ranking by Weighted Exam Appearances
   const chapList = [];
   DATA.tree.forEach(div => {
     (div.chapters || []).forEach(ch => {
@@ -5864,39 +7148,26 @@ function renderAnalyticsPage() {
   chapList.sort((a, b) => b.weighted - a.weighted);
   const maxChapW = chapList.length ? chapList[0].weighted : 1;
 
-  // All High-Yield Topics across the entire EMLE sorted highest to lowest
   const topTopics = DATA.topics.filter(t => t.yield_tier === "high").slice().sort((a, b) => (b.weighted_freq || 0) - (a.weighted_freq || 0));
   const maxTopW = topTopics.length ? (topTopics[0].weighted_freq || 1) : 1;
-
   const allExamsCount = computeSeparateExamsData().length;
-  const showOverview = (seaState.subTab === "all" || seaState.subTab === "overview");
-  const showSeparate = (seaState.subTab === "all" || seaState.subTab === "separate");
 
-  const separateExamCardHTML = `
-    <div class="analysis-card" id="separateExamAnalysisCard" style="margin-bottom:16px; border:1.5px solid var(--teal);">
-      <div class="ac-header" style="flex-wrap:wrap; gap:8px;">
-        <div>
-          <span class="ac-title" style="font-size:16px; color:var(--teal);">📋 Separate Exam Analysis (${allExamsCount} Exams)</span>
-          <div class="ac-subtitle" style="margin-top:2px;">
-            Total questions per exam &amp; exact subject distribution (question count + %) sorted from <strong>Newest to Oldest</strong>
-          </div>
-        </div>
-        <span class="sea-total-q-pill">10/2020 &rarr; 7/2026</span>
+  container.innerHTML = `
+    <div class="analysis-card" style="margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border:1.5px solid #99f6e4; background:var(--teal-light);">
+      <div dir="rtl" style="font-size:13.5px; font-weight:700; color:var(--text);">
+        🎓 هل تبحث عن تحليل كل امتحان منفصل أو حل الامتحانات السابقة كاملة؟ تم نقلها إلى قسم <strong>Exams</strong> المخصص.
       </div>
-      <div id="separateExamAnalysisContent">
-        ${buildSeparateExamInnerHTML()}
-      </div>
+      <button class="btn-teal" onclick="navigateTo('exams')" style="font-size:12.5px; padding:7px 14px;">
+        🎓 Open Past Exams (${allExamsCount} Exams) &rarr;
+      </button>
     </div>
-  `;
 
-  const overviewHTML = `
     <div class="analysis-card" style="margin-bottom:16px;">
       <div class="ac-header">
         <span class="ac-title">1. Cumulative Pareto Curve &amp; Exam Yield Distribution (6,970 Total Appearances)</span>
         <span class="ac-subtitle">94 of 135 Topics (69.6% of topics) account for <strong>${target90Pct}%</strong> of all repeated exam questions</span>
       </div>
 
-      <!-- Segmented Visual Bar of Exam Weight -->
       <div style="margin:14px 0 8px 0;">
         <div style="display:flex; height:26px; border-radius:8px; overflow:hidden; font-size:12px; font-weight:700; color:#fff;">
           <div style="width:${hyPct}%; background:#e11d48; display:flex; align-items:center; justify-content:center;" title="High Yield: ${hyWeight} appearances">🔥 High Yield: ${hyPct}% (${hyWeight.toLocaleString()}&times;)</div>
@@ -5930,7 +7201,6 @@ function renderAnalyticsPage() {
     </div>
 
     <div class="chart-grid-2">
-      <!-- Chart 2: All 18 Chapters Ranked by Weighted Exam Appearances -->
       <div class="analysis-card">
         <div class="ac-header">
           <span class="ac-title">2. Chapter Weight Ranking (With Repeats vs. Unique)</span>
@@ -5953,7 +7223,6 @@ function renderAnalyticsPage() {
         </div>
       </div>
 
-      <!-- Chart 3: All High-Yield EMLE Topics Leaderboard -->
       <div class="analysis-card">
         <div class="ac-header">
           <span class="ac-title">3. All 🔥 High-Yield Topics in EMLE (${topTopics.length} Topics)</span>
@@ -5976,28 +7245,6 @@ function renderAnalyticsPage() {
         </div>
       </div>
     </div>
-  `;
-
-  container.innerHTML = `
-    <div class="analytics-subtabs">
-      <div class="ast-btn-group">
-        <button class="ast-tab-btn ${seaState.subTab === 'all' ? 'active-ast' : ''}" onclick="setAnalyticsSubTab('all')">
-          🌐 All Analytics (Overview + Separate Exams)
-        </button>
-        <button class="ast-tab-btn ${seaState.subTab === 'separate' ? 'active-ast' : ''}" onclick="setAnalyticsSubTab('separate')">
-          📋 Separate Exam Analysis (${allExamsCount} Exams)
-        </button>
-        <button class="ast-tab-btn ${seaState.subTab === 'overview' ? 'active-ast' : ''}" onclick="setAnalyticsSubTab('overview')">
-          📊 Overall Pareto &amp; Chapter Yield
-        </button>
-      </div>
-      <div style="font-size:12px; color:var(--text-muted); font-weight:600;">
-        Sorted: Newest &rarr; Oldest &bull; Filterable by Real / Trial / Simulation / ALL
-      </div>
-    </div>
-    ${seaState.subTab === "separate" ? separateExamCardHTML : ""}
-    ${showOverview ? overviewHTML : ""}
-    ${seaState.subTab === "all" ? separateExamCardHTML : ""}
   `;
 }
 
@@ -6870,6 +8117,14 @@ function toggleExpandExamTags() {
   renderQuizPage(false);
 }
 
+function syncTopbarHeight() {
+  const bar = document.getElementById("mainTopbar") || document.querySelector(".topbar");
+  if (!bar) return;
+  const rect = bar.getBoundingClientRect();
+  const h = Math.max(46, Math.ceil(rect.height || bar.offsetHeight || 54));
+  document.documentElement.style.setProperty("--topbar-h", h + "px");
+}
+
 function toggleSplitNotes() {
   state.splitNotesOpen = !state.splitNotesOpen;
   const layout = document.getElementById("quizSplitLayout");
@@ -6886,6 +8141,13 @@ function toggleSplitNotes() {
     document.body.classList.add("sidebar-collapsed");
   }
   renderSplitNotesPane();
+  syncTopbarHeight();
+  if (state.splitNotesOpen && window.innerWidth <= 960) {
+    requestAnimationFrame(() => {
+      const pane = document.getElementById("splitNotesPane");
+      if (pane) pane.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 }
 
 function renderSplitNotesPane() {
@@ -7083,6 +8345,14 @@ function renderQuizPage(resetQTimer) {
 
 
 function getNextTopicActionButtonsHTML(currentQ) {
+  if (state.quizFilter === "custom_exam" && state.customExamReturnView === "exams") {
+    return `
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        ${(state.examMode && !state.examSubmitted) ? `<button class="btn-teal" onclick="submitExamBlock()">🏁 Submit &amp; Grade Exam</button>` : ''}
+        <button class="btn-outline" onclick="navigateTo('exams')">&larr; Back to Past Exams</button>
+      </div>
+    `;
+  }
   if (!currentQ) return `<button class="btn-teal" onclick="navigateTo('quizzes')">Finish QBank &rarr;</button>`;
   const curIdx = DATA.topics.findIndex(t => t.id === currentQ.topic_id);
   const nextTopic = (curIdx >= 0 && curIdx + 1 < DATA.topics.length) ? DATA.topics[curIdx + 1] : null;
@@ -7979,7 +9249,13 @@ async function bootCompressedPortal() {
   }
   navigateTo("home");
 }
+window.addEventListener("resize", syncTopbarHeight);
 window.addEventListener("DOMContentLoaded", () => {
+  syncTopbarHeight();
+  const mainTopbar = document.getElementById("mainTopbar") || document.querySelector(".topbar");
+  if (mainTopbar && typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(syncTopbarHeight).observe(mainTopbar);
+  }
   bootCompressedPortal();
 });
 </script>
