@@ -2166,20 +2166,6 @@
     color: #047857;
     border: 1px solid #a7f3d0;
   }
-  .sea-exam-mode-btn {
-    padding: 5px 10px;
-    font-size: 12px;
-    font-weight: 700;
-    border-radius: 6px;
-    border: 1.5px solid var(--teal);
-    background: var(--surface);
-    color: var(--teal);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .sea-exam-mode-btn:hover {
-    background: var(--teal-light);
-  }
   .sea-body-hint {
     display: flex;
     align-items: center;
@@ -3566,7 +3552,7 @@
     </div>
 
     <button class="subtle-link-btn" id="searchBtn" onclick="openSearchModal()" title="Instant Search across 135 Topics & 2,052 Questions (Ctrl+K)">🔍<span class="btn-label-desktop"> Search</span></button>
-    <button class="subtle-link-btn" id="customExamBtn" onclick="openCustomExamModal()" title="Build a Custom Exam Block (Tutor or Timed Exam Mode)">⚡<span class="btn-label-desktop"> Custom Exam</span></button>
+    <button class="subtle-link-btn" id="customExamBtn" onclick="openCustomExamModal()" title="Build a Custom Exam Block (Tutor Mode)">⚡<span class="btn-label-desktop"> Custom Exam</span></button>
         
     <div id="authPillContainer" class="auth-pill-wrap">
       <button class="auth-topbar-pill" id="authTopBtn" onclick="openAuthModal()" title="Cloud Sync & Account">
@@ -3675,7 +3661,7 @@
           <div>
             <span class="npc-tag">Past EMLE Papers</span>
             <h2 class="npc-title">🎓 Exams</h2>
-            <p class="npc-desc" dir="rtl" style="text-align: right; line-height: 1.6; font-size: 13.5px;">حل امتحانات <strong>EMLE</strong> السابقة كاملة على بعضها (<strong>49 امتحان</strong>) بنظام <strong>Tutor</strong> أو <strong>Exam Mode</strong> مع تحليل اختياري.</p>
+            <p class="npc-desc" dir="rtl" style="text-align: right; line-height: 1.6; font-size: 13.5px;">حل امتحانات <strong>EMLE</strong> السابقة كاملة على بعضها (<strong>49 امتحان</strong>) بنظام <strong>Tutor Mode</strong> مع تحليل اختياري.</p>
           </div>
           <div class="npc-footer">
             <span>Open Exams</span>
@@ -4015,7 +4001,7 @@
       <div class="page-title-block" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <div>
           <h1>🎓 Past EMLE Exams</h1>
-          <p dir="rtl" style="text-align:right; margin-top:4px;">حل أي امتحان سابق كامل على بعضه بنظام <strong>Tutor Mode</strong> (تصحيح وشرح فوري) أو <strong>Timed Exam Mode</strong> (محاكاة بدون إظهار الإجابات إلا بعد التسليم)، ويمكنك إظهار التحليل في أي وقت.</p>
+          <p dir="rtl" style="text-align:right; margin-top:4px;">حل أي امتحان سابق كامل على بعضه بنظام <strong>Tutor Mode</strong> (تصحيح وشرح فوري)، ويمكنك إظهار التحليل في أي وقت.</p>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button class="btn-outline" onclick="navigateTo('analytics')">📊 Overall Analytics</button>
@@ -4120,15 +4106,7 @@
     </div>
 
     <div class="form-row">
-      <label class="form-label">1. Session Mode</label>
-      <div class="yield-filter-bar" style="margin-bottom:0;">
-        <button class="yf-btn active-yf" id="ceModeTutor" onclick="setCeOpt('mode','tutor')">📖 Tutor Mode (Instant Answer)</button>
-        <button class="yf-btn" id="ceModeExam" onclick="setCeOpt('mode','exam')">⏱ Exam Mode (Grade at End)</button>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <label class="form-label">2. Question Pool &amp; Topic Yield Tier (Multi-Select)</label>
+      <label class="form-label">1. Question Pool &amp; Topic Yield Tier (Multi-Select)</label>
       <div class="yield-filter-bar" style="margin-bottom:6px;">
         <button class="yf-btn active-yf" id="cePoolAll" onclick="setCeOpt('pool','all')">All Qs</button>
         <button class="yf-btn" id="cePoolUnans" onclick="setCeOpt('pool','unanswered')">Unanswered</button>
@@ -4141,25 +4119,25 @@
     </div>
 
     <div class="form-row">
-      <label class="form-label">3. Select Subject / Division (One or More, or ALL)</label>
+      <label class="form-label">2. Select Subject / Division (One or More, or ALL)</label>
       <div class="yield-filter-bar" style="margin-bottom:0;" id="ceDivisionsContainer"></div>
     </div>
 
     <div class="form-row">
-      <label class="form-label">4. Select Chapter (One or More, or ALL)</label>
+      <label class="form-label">3. Select Chapter (One or More, or ALL)</label>
       <div class="yield-filter-bar" style="margin-bottom:0; max-height:115px; overflow-y:auto; padding:4px; border:1px solid var(--border-subtle); border-radius:6px;" id="ceChaptersContainer"></div>
     </div>
 
     <div class="form-row">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <label class="form-label" style="margin-bottom:0;">5. Select Topic (One or More, or ALL)</label>
+        <label class="form-label" style="margin-bottom:0;">4. Select Topic (One or More, or ALL)</label>
         <input type="text" id="ceTopicSearchInput" placeholder="Filter topics..." oninput="updateCeModalUI()" style="padding:3px 8px; font-size:11.5px; border:1px solid var(--border); border-radius:4px; width:170px;" />
       </div>
       <div class="yield-filter-bar" style="margin-bottom:0; max-height:145px; overflow-y:auto; padding:6px; border:1px solid var(--border-subtle); border-radius:6px;" id="ceTopicsContainer"></div>
     </div>
 
     <div class="form-row" style="margin-bottom:8px;">
-      <label class="form-label">6. Number of Questions (Randomly Shuffled)</label>
+      <label class="form-label">5. Number of Questions (Randomly Shuffled)</label>
       <div class="yield-filter-bar" style="margin-bottom:0;">
         <button class="yf-btn" id="ceCount10" onclick="setCeOpt('count',10)">10 Qs</button>
         <button class="yf-btn active-yf" id="ceCount25" onclick="setCeOpt('count',25)">25 Qs</button>
@@ -4208,98 +4186,13 @@
       ☁️ تسجيل الدخول يحفظ تقدمك ويزامن إجاباتك تلقائياً بين جميع أجهزتك.
     </div>
 
-    <datalist id="egyptUniversitiesList">
-      <option value="كلية طب القصر العيني (جامعة القاهرة)"></option>
-      <option value="كلية الطب بجامعة عين شمس"></option>
-      <option value="كلية طب جامعة المنصورة"></option>
-      <option value="كلية الطب بجامعة الإسكندرية"></option>
-      <option value="كلية طب جامعة العاصمة (حلوان سابقًا)"></option>
-      <option value="كلية طب جامعة أسيوط"></option>
-      <option value="كلية طب الأزهر بالقاهرة (بنين)"></option>
-      <option value="كلية طب الأزهر بالقاهرة (بنات)"></option>
-      <option value="كلية طب الأزهر بأسيوط"></option>
-      <option value="كلية طب الأزهر بدمياط"></option>
-      <option value="كلية طب جامعة الفيوم"></option>
-      <option value="كلية طب جامعة المنيا"></option>
-      <option value="كلية طب جامعة بنها"></option>
-      <option value="كلية طب جامعة بني سويف"></option>
-      <option value="كلية طب جامعة كفر الشيخ"></option>
-      <option value="كلية طب جامعة المنوفية"></option>
-      <option value="كلية طب قنا (جامعة جنوب الوادي)"></option>
-      <option value="كلية طب جامعة قناة السويس"></option>
-      <option value="كلية طب جامعة طنطا"></option>
-      <option value="كلية طب جامعة الزقازيق"></option>
-      <option value="كلية الطب البشري بفاقوس (جامعة الزقازيق)"></option>
-      <option value="كلية طب جامعة سوهاج"></option>
-      <option value="كلية طب جامعة بورسعيد"></option>
-      <option value="كلية طب جامعة أسوان"></option>
-      <option value="كلية طب جامعة دمياط"></option>
-      <option value="كلية طب جامعة السويس"></option>
-      <option value="كلية طب القوات المسلحة"></option>
-      <option value="كلية طب جامعة الوادي الجديد"></option>
-      <option value="كلية الطب جامعة الأقصر"></option>
-      <option value="كلية الطب جامعة العريش"></option>
-      <option value="كلية الطب جامعة مدينة السادات"></option>
-      <option value="كلية طب جامعة 6 أكتوبر (O6U)"></option>
-      <option value="كلية طب جامعة مصر للعلوم والتكنولوجيا (MUST)"></option>
-      <option value="كلية طب جامعة نيو جيزة (NGU)"></option>
-      <option value="كلية طب جامعة النهضة (NUB)"></option>
-      <option value="كلية طب جامعة بدر بالقاهرة (BUC)"></option>
-      <option value="كلية طب الجامعة الحديثة (MTI)"></option>
-      <option value="كلية طب جامعة الدلتا (Delta)"></option>
-      <option value="كلية طب جامعة ميريت (MUE)"></option>
-      <option value="كلية الطب البشري جامعة حورس"></option>
-      <option value="كلية الطب البشري جامعة باديا"></option>
-      <option value="كلية الطب البشري جامعة مصر الدولية (MIU)"></option>
-      <option value="كلية الطب البشري جامعة المستقبل"></option>
-      <option value="كلية الطب البشري جامعة الأهرام الكندية"></option>
-      <option value="كلية الطب البشري جامعة سيناء"></option>
-      <option value="كلية طب جامعة المنصورة الجديدة"></option>
-      <option value="كلية طب الأكاديمية العربية للعلوم والتكنولوجيا والنقل البحري"></option>
-      <option value="كلية طب جامعة العلمين الدولية"></option>
-      <option value="كلية طب جامعة الجلالة (GU)"></option>
-      <option value="كلية طب جامعة الملك سلمان (KSIU)"></option>
-      <option value="كلية طب جامعة الإسكندرية الأهلية"></option>
-      <option value="كلية طب جامعة أسيوط الأهلية"></option>
-      <option value="كلية طب جامعة بنها الأهلية"></option>
-      <option value="كلية طب جامعة شرق بورسعيد الأهلية"></option>
-      <option value="كلية طب جامعة المنصورة الأهلية"></option>
-      <option value="كلية طب جامعة المنيا الأهلية"></option>
-      <option value="كلية طب جامعة الإسماعيلية الجديدة الأهلية"></option>
-      <option value="كلية طب جامعة جنوب الوادي الأهلية"></option>
-      <option value="كلية طب جامعة الزقازيق الأهلية"></option>
-      <option value="كلية طب جامعة بني سويف الأهلية"></option>
-      <option value="كلية طب جامعة المنوفية الأهلية"></option>
-      <option value="كلية طب جامعة القاهرة الأهلية"></option>
-      <option value="كلية طب جامعة عين شمس الأهلية"></option>
-      <option value="كلية طب جامعة سوهاج الأهلية"></option>
-      <option value="كلية طب جامعة كفر الشيخ الأهلية"></option>
-      <option value="كلية طب جامعة طنطا الأهلية"></option>
-      <option value="كلية طب جامعة الفيوم الأهلية"></option>
-      <option value="كلية طب جامعة حلوان الأهلية"></option>
-    </datalist>
-
-    <div class="welcome-login-box" style="text-align:right; direction:rtl;">
-      <div style="font-size:13.5px; font-weight:800; color:var(--text); margin-bottom:10px; text-align:center;">
-        🎓 بيانات الطالب
-      </div>
-      <div id="welcomeAuthErrorMsg" style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; padding:8px 12px; border-radius:6px; font-size:12px; margin-bottom:10px; line-height:1.4;"></div>
-
-      <div style="margin-bottom:10px;">
-        <label style="display:block; font-size:12.5px; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">👤 الاسم:</label>
-        <input type="text" id="welcomeStudentName" placeholder="اكتب اسمك" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:6px; font-size:13px; background:var(--surface); color:var(--text);" />
-      </div>
-
-      <div style="margin-bottom:14px;">
-        <label style="display:block; font-size:12.5px; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">🏛️ الجامعة:</label>
-        <input type="text" id="welcomeStudentUniv" list="egyptUniversitiesList" placeholder="اختر أو اكتب اسم جامعتك" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:6px; font-size:13px; background:var(--surface); color:var(--text);" />
-      </div>
+    <div class="welcome-login-box">
+      <div id="welcomeAuthErrorMsg" style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; padding:8px 12px; border-radius:6px; font-size:12px; margin-bottom:10px; line-height:1.4; direction:rtl; text-align:right;"></div>
 
       <button class="welcome-google-btn" onclick="signInWithGoogle('welcome')" type="button" style="direction:ltr;">
         <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
-        <span>Sign in / Sign up with Google</span>
+        <span>Sign in with Google</span>
       </button>
-      
     </div>
 
     <button class="welcome-guest-btn" onclick="continueWithoutSignIn()" type="button">
@@ -4333,11 +4226,7 @@
           <span id="userAvatarInitial">?</span>
         </div>
         <div id="userDisplayName" style="font-weight:700; font-size:15px; color:var(--text);">Student</div>
-        <div id="userUnivDisplay" style="font-size:13px; font-weight:700; color:var(--teal); margin-top:3px;"></div>
         <div id="userEmailDisplay" style="font-size:12.5px; color:var(--text-muted); margin-top:2px;">student@example.com</div>
-        <div style="margin-top:8px;">
-          <button class="btn-outline" style="padding:4px 10px; font-size:11.5px;" onclick="openCompleteProfileView()">✏️ تعديل الاسم والجامعة</button>
-        </div>
         <div style="margin-top:10px;">
           <span class="auth-badge-pill" id="modalSyncBadge" style="background:#f0fdf4; border:1px solid #bbf7d0; color:#15803d;">
             <span class="sync-indicator-dot sync-dot-green" id="modalSyncDot"></span>
@@ -4367,30 +4256,7 @@
       </div>
     </div>
 
-    <!-- State C: Complete New Student Profile (Name & University) -->
-    <div id="authCompleteProfileView" style="display:none; direction:rtl; text-align:right;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 style="margin:0; font-size:16px; color:var(--teal);">🎓 إكمال بيانات الطالب</h3>
-        <button class="subtle-link-btn" onclick="closeAuthModal()">&times; إغلاق</button>
-      </div>
-      <div style="background:var(--teal-light); border:1px solid var(--teal-border); border-radius:8px; padding:11px 13px; margin-bottom:12px; color:var(--teal); font-weight:700; font-size:12.5px; line-height:1.6;">
-        أهلاً بك في <strong>EMLE in a Nutshell</strong>! يُرجى إدخال <strong>الاسم</strong> و<strong>الجامعة</strong> لحفظهما في حسابك:
-      </div>
-      <div id="completeProfileErrorMsg" style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; padding:8px 12px; border-radius:6px; font-size:12px; margin-bottom:10px;"></div>
-      <div style="margin-bottom:10px;">
-        <label style="display:block; font-size:12.5px; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">👤 الاسم:</label>
-        <input type="text" id="completeProfileNameInput" placeholder="اكتب اسمك" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:6px; font-size:13px; background:var(--surface); color:var(--text);" />
-      </div>
-      <div style="margin-bottom:16px;">
-        <label style="display:block; font-size:12.5px; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">🏛️ الجامعة:</label>
-        <input type="text" id="completeProfileUnivInput" list="egyptUniversitiesList" placeholder="اختر أو اكتب اسم جامعتك" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:6px; font-size:13px; background:var(--surface); color:var(--text);" />
-      </div>
-      <button class="btn-teal" style="width:100%; justify-content:center; padding:10px;" onclick="saveCompletedStudentProfile()">
-        ✅ حفظ الاسم والجامعة
-      </button>
-    </div>
-
-    <!-- State B: User is NOT logged in -->
+    <!-- State B: User is NOT logged in (Google Sign In Only) -->
     <div id="authLoginView">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
         <div>
@@ -4402,29 +4268,14 @@
 
       <div id="authErrorMsg" style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; padding:8px 12px; border-radius:6px; font-size:12px; margin-bottom:12px; line-height:1.4;"></div>
 
-      <div style="direction:rtl; text-align:right; background:#f0fdf4; border:1px solid #bbf7d0; border-right:3px solid #15803d; border-radius:6px; padding:9px 12px; margin-bottom:12px; font-size:12.5px; color:#14532d; line-height:1.6;">
-        ☁️ تسجيل الدخول يحفظ تقدمك ويزامن إجاباتك تلقائياً بين جميع أجهزتك.
-      </div>
-
-      <!-- Student Name & University Fields for New Account -->
-      <div style="direction:rtl; text-align:right; background:var(--surface-subtle); border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:12px;">
-        <div style="font-size:12.5px; font-weight:800; color:var(--teal); margin-bottom:8px;">
-          🎓 بيانات الطالب:
-        </div>
-        <div style="margin-bottom:8px;">
-          <label style="display:block; font-size:12px; font-weight:700; color:var(--text-secondary); margin-bottom:3px;">👤 الاسم:</label>
-          <input type="text" id="authStudentNameInput" placeholder="اكتب اسمك" style="width:100%; padding:8px 11px; border:1px solid var(--border); border-radius:6px; font-size:13px; background:var(--surface); color:var(--text);" />
-        </div>
-        <div>
-          <label style="display:block; font-size:12px; font-weight:700; color:var(--text-secondary); margin-bottom:3px;">🏛️ الجامعة:</label>
-          <input type="text" id="authStudentUnivInput" list="egyptUniversitiesList" placeholder="اختر أو اكتب اسم جامعتك" style="width:100%; padding:8px 11px; border:1px solid var(--border); border-radius:6px; font-size:13px; background:var(--surface); color:var(--text);" />
-        </div>
+      <div style="direction:rtl; text-align:right; background:#f0fdf4; border:1px solid #bbf7d0; border-right:3px solid #15803d; border-radius:6px; padding:10px 12px; margin-bottom:14px; font-size:12.5px; color:#14532d; line-height:1.6;">
+        ☁️ تسجيل الدخول بحساب جوجل يحفظ تقدمك ويزامن إجاباتك تلقائياً بين جميع أجهزتك.
       </div>
 
       <!-- Google Sign In Button -->
       <button class="google-signin-btn" onclick="signInWithGoogle('modal')" id="btnGoogleSignIn" type="button">
         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
-        <span>Sign in / Sign up with Google</span>
+        <span>Sign in with Google</span>
       </button>
 
       
@@ -4467,12 +4318,9 @@ let state = {
   studyPlanScope: "all",
   chapterOrder: [],
   showChapReorder: false,
-  studentProfile: { name: "", university: "" },
   streak: { current: 1, best: 1, lastDate: "", days: {}, todayQs: 0, goal: 30 },
   eliminatedOpts: {},
   customQs: [],
-  examMode: false,
-  examSubmitted: false,
   quizIndex: 0,
   splitNotesOpen: false,
   dotsExpanded: false,
@@ -4492,7 +4340,6 @@ function loadState() {
       if (parsed.eliminatedOpts) state.eliminatedOpts = parsed.eliminatedOpts;
       if (parsed.studyPlanScope) state.studyPlanScope = parsed.studyPlanScope;
       if (Array.isArray(parsed.chapterOrder)) state.chapterOrder = parsed.chapterOrder;
-      if (parsed.studentProfile) state.studentProfile = parsed.studentProfile;
     }
   } catch (e) {}
 }
@@ -4509,8 +4356,7 @@ function saveState() {
       streak: state.streak,
       eliminatedOpts: state.eliminatedOpts,
       studyPlanScope: state.studyPlanScope,
-      chapterOrder: state.chapterOrder,
-      studentProfile: state.studentProfile
+      chapterOrder: state.chapterOrder
     }));
   } catch (e) {}
 
@@ -5879,8 +5725,6 @@ function openSearchedQuestion(qnum) {
   closeSearchModal();
   const q = DATA.questions.find(x => x.number === qnum);
   if (!q) return;
-  state.examMode = false;
-  state.examSubmitted = false;
   state.quizFilter = "topic_" + q.topic_id;
   const qs = getQuestionsForFilter(state.quizFilter);
   const idx = qs.findIndex(x => x.number === qnum);
@@ -5891,7 +5735,6 @@ function openSearchedQuestion(qnum) {
 
 // ================= CUSTOM EXAM SIMULATOR (MULTI-SELECT DIVISIONS, CHAPTERS, TOPICS & YIELDS) =================
 let ceConfig = {
-  mode: "tutor",
   pool: "all",
   yields: ["high", "medium", "low"],
   divs: [],     // empty array means ALL divisions
@@ -6012,9 +5855,6 @@ function getCeMatchingQuestions() {
 }
 
 function updateCeModalUI() {
-  document.getElementById("ceModeTutor").classList.toggle("active-yf", ceConfig.mode === "tutor");
-  document.getElementById("ceModeExam").classList.toggle("active-yf", ceConfig.mode === "exam");
-
   ["all","unanswered","wrong","flagged","rep5","discrepancy"].forEach(p => {
     const mapId = { all:"cePoolAll", unanswered:"cePoolUnans", wrong:"cePoolWrong", flagged:"cePoolFlag", rep5:"cePoolRep5", discrepancy:"cePoolDisc" }[p];
     const el = document.getElementById(mapId);
@@ -6111,25 +5951,9 @@ function launchCustomExamBlock() {
   state.customQs = ceConfig.count > 0 ? shuffled.slice(0, ceConfig.count) : shuffled;
   state.customExamTitle = "Custom Exam Block";
   state.customExamReturnView = "quizzes";
-  state.examMode = (ceConfig.mode === "exam");
-  state.examSubmitted = false;
   closeCustomExamModal();
   startQuiz("custom_exam");
-  showToast(`🚀 Started ${state.customQs.length}-Question Block (${state.examMode ? 'Timed Exam Mode' : 'Tutor Mode'})`);
-}
-
-function submitExamBlock() {
-  state.examSubmitted = true;
-  stopQuizTimers();
-  const qs = state.customQs || [];
-  let correct = 0;
-  qs.forEach(q => {
-    const st = state.qStatus[q.number];
-    if (st && st.selected === q.verified_answer) correct++;
-  });
-  const pct = qs.length ? Math.round((correct / qs.length) * 100) : 0;
-  showToast(`🏁 Exam Graded: ${correct} / ${qs.length} (${pct}%)! Explanations unlocked.`);
-  renderQuizPage(false);
+  showToast(`🚀 Started ${state.customQs.length}-Question Block (Tutor Mode)`);
 }
 
 // ================= PAGE 6: VISUAL ANALYTICS & PAGE 8: PAST EXAMS RENDERER =================
@@ -6576,17 +6400,12 @@ function launchExamQuestionPool(pool, title, mode, emptyToast) {
     showToast(emptyToast || "🔒 أسئلة هذا الجزء متاحة في النسخة الكاملة للمنصة (تواصل معنا عبر التليجرام للاشتراك).");
     return;
   }
-  const isExamMode = (mode === "exam");
   state.customQs = playable;
   state.customExamTitle = title;
   state.customExamReturnView = "exams";
-  state.examMode = isExamMode;
-  state.examSubmitted = false;
   startQuiz("custom_exam");
   if (playable.length < pool.length) {
     showToast(`🚀 تم فتح ${playable.length} سؤال متاح مجاناً من ${title} (من أصل ${pool.length} سؤال — الباقي في النسخة الكاملة)`);
-  } else if (isExamMode) {
-    showToast(`⏱️ Exam Mode: ${title} (${playable.length} سؤال) — الإجابات تظهر بعد الضغط على Submit`);
   } else {
     showToast(`🚀 ${title} (${playable.length} سؤال — Tutor Mode)`);
   }
@@ -6903,9 +6722,6 @@ function buildExamsPageInnerHTML() {
                     🔁 التكرارات
                   </button>
                 </div>
-                <button class="sea-exam-mode-btn" onclick="practiceExamByTag('${ex.tag}', null, 'exam', event)" title="محاكاة امتحان: إخفاء الإجابات والنتيجة حتى التسليم">
-                  ⏱️ Exam Mode
-                </button>
                 <button class="btn-teal" style="padding:5px 12px; font-size:12px;" onclick="practiceExamByTag('${ex.tag}', null, 'tutor', event)" title="حل الامتحان بالكامل بنظام الشرح والتصحيح الفوري">
                   🚀 حل الامتحان (${playableInExam < ex.totalQs && playableInExam > 0 ? `${playableInExam} متاح / ${ex.totalQs}` : `${ex.totalQs} Qs`})
                 </button>
@@ -6941,7 +6757,6 @@ function buildCycleColumnSlotsHTML(examsList, emptyMsg) {
         </div>
         <div class="sea-cmp-slot-btns">
           <button class="sea-mini-btn" style="border:1px solid var(--border);" onclick="practiceExamByTag('${ex.tag}', null, 'tutor', event)">🚀 حل</button>
-          <button class="sea-mini-btn" style="border:1px solid var(--border);" onclick="practiceExamByTag('${ex.tag}', null, 'exam', event)">⏱️ Exam</button>
           ${rs.repeatedCount > 0 ? `<button class="sea-mini-btn" style="border:1px solid #99f6e4; color:var(--teal);" onclick="practiceExamRepeatSubset('${ex.tag}', 'repeated', null, event)">🔁 المتكرر (${rs.repeatedCount})</button>` : ''}
         </div>
       </div>
@@ -7568,8 +7383,6 @@ function launchStudyPlanDayQuiz(dayIdx) {
   const qSet = new Set(dayObj.qNums);
   const pool = DATA.questions.filter(q => qSet.has(q.number));
   state.customQs = pool;
-  state.examMode = false;
-  state.examSubmitted = false;
   startQuiz("custom_exam");
   showToast(`🚀 بدأت أسئلة اليوم ${dayObj.dayNum} (${pool.length} سؤال)`);
 }
@@ -8095,7 +7908,6 @@ function startQuiz(filter) {
     showToast("No questions in this category yet.");
     return;
   }
-  if (filter !== "custom_exam") { state.examMode = false; state.examSubmitted = false; }
   state.quizFilter = filter;
   state.quizIndex = 0;
   state.dotsExpanded = false;
@@ -8238,16 +8050,8 @@ function renderQuizPage(resetQTimer) {
       }
     }
     const isElim = !!(state.eliminatedOpts[q.number] && state.eliminatedOpts[q.number][idx]);
-    const showGraded = isAnswered && (!state.examMode || state.examSubmitted);
-    let finalRowCls = isElim ? "is-eliminated " : "";
-    let finalBadgeRight = "";
-    if (showGraded) {
-      finalRowCls += rowCls;
-      finalBadgeRight = badgeRight;
-    } else if (isAnswered && state.examMode && !state.examSubmitted && idx === st.selected) {
-      finalRowCls += " active-state";
-      finalBadgeRight = `<span style="font-size:12px; font-weight:700; color:var(--teal);">Selected</span>`;
-    }
+    const finalRowCls = (isElim ? "is-eliminated " : "") + rowCls;
+    const finalBadgeRight = badgeRight;
     return `
       <div class="opt-row ${finalRowCls}" onclick="selectQuizOption(${q.number}, ${idx})" oncontextmenu="event.preventDefault(); toggleEliminateOpt(${q.number}, ${idx});">
         <div class="opt-left">
@@ -8300,7 +8104,6 @@ function renderQuizPage(resetQTimer) {
             🚩 ${isFlagged ? 'Flagged' : 'Flag'}
           </button>
           ${isAnswered ? `<button class="subtle-link-btn" onclick="retryQuestion(${q.number})">Retry</button>` : ''}
-          ${(state.examMode && !state.examSubmitted) ? `<button class="btn-teal" style="padding:5px 10px; font-size:12px;" onclick="submitExamBlock()">🏁 Submit &amp; Grade Exam</button>` : ''}
         </div>
       </div>
 
@@ -8310,7 +8113,7 @@ function renderQuizPage(resetQTimer) {
 
       <div class="opt-list">${optsHTML}</div>
 
-      ${(isAnswered && (!state.examMode || state.examSubmitted)) ? `
+      ${isAnswered ? `
         <div class="explanation-box">
           <div style="font-weight:700; color:var(--text); margin-bottom:6px;">
             Verified Answer: ${verLetter}. ${annotateMedicalHTML(q.options[q.verified_answer] || '')}
@@ -8348,7 +8151,6 @@ function getNextTopicActionButtonsHTML(currentQ) {
   if (state.quizFilter === "custom_exam" && state.customExamReturnView === "exams") {
     return `
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        ${(state.examMode && !state.examSubmitted) ? `<button class="btn-teal" onclick="submitExamBlock()">🏁 Submit &amp; Grade Exam</button>` : ''}
         <button class="btn-outline" onclick="navigateTo('exams')">&larr; Back to Past Exams</button>
       </div>
     `;
@@ -8417,7 +8219,7 @@ function triggerFlag(qnum) {
 
 function revealQuizAnswer(qnum) {
   const cur = state.qStatus[qnum] || { selected: null, status: null, hintUsed: false, flagged: false };
-  if (typeof cur.selected === "number" && (!state.examMode || state.examSubmitted)) return;
+  if (typeof cur.selected === "number") return;
 
   state.qStatus[qnum] = {
     selected: -1,
@@ -8559,15 +8361,10 @@ function initFirebase() {
       try {
         fbAuth.getRedirectResult().then(res => {
           if (res && res.user) {
-            if ((!state.studentProfile || !state.studentProfile.name) && res.user.displayName) {
-              if (!state.studentProfile) state.studentProfile = { name: "", university: "" };
-              state.studentProfile.name = res.user.displayName;
-              saveState();
-            }
             closeAuthModal();
             const wOverlay = document.getElementById("welcomeAuthOverlay");
             if (wOverlay) wOverlay.classList.remove("show");
-            showToast("Welcome " + ((state.studentProfile && state.studentProfile.name) || res.user.displayName || "") + "! Signed in & Cloud Synced.");
+            showToast("Welcome " + (res.user.displayName || "") + "! Signed in & Cloud Synced.");
           }
         }).catch(err => {
           console.error("Redirect sign-in notice:", err);
@@ -8602,22 +8399,6 @@ function continueWithoutSignIn() {
   showToast("تم الدخول كزائر — يتم حفظ التقدم على هذا المتصفح فقط.");
 }
 
-function closeWelcomeAndOpenEmailAuth() {
-  const wName = (document.getElementById("welcomeStudentName")?.value || "").trim();
-  const wUniv = (document.getElementById("welcomeStudentUniv")?.value || "").trim();
-  if (wName) {
-    const mName = document.getElementById("authStudentNameInput");
-    if (mName) mName.value = wName;
-  }
-  if (wUniv) {
-    const mUniv = document.getElementById("authStudentUnivInput");
-    if (mUniv) mUniv.value = wUniv;
-  }
-  const overlay = document.getElementById("welcomeAuthOverlay");
-  if (overlay) overlay.classList.remove("show");
-  openAuthModal();
-}
-
 async function onUserAuthStateChanged(user) {
   currentUser = user;
   updateAuthTopBar();
@@ -8627,9 +8408,6 @@ async function onUserAuthStateChanged(user) {
     updateSyncIndicator("syncing");
     await syncProgressFromCloud(user);
     updateAuthTopBar();
-    if (!state.studentProfile || !state.studentProfile.name || !state.studentProfile.university) {
-      openCompleteProfileView();
-    }
   } else {
     updateSyncIndicator("local");
     showWelcomeGateIfNeeded();
@@ -8686,59 +8464,11 @@ function updateAuthTopBar() {
   const label = document.getElementById("authTopLabel");
   if (!label) return;
   if (currentUser) {
-    const pName = (state.studentProfile && state.studentProfile.name) ? state.studentProfile.name.trim() : "";
-    const pUniv = (state.studentProfile && state.studentProfile.university) ? state.studentProfile.university.trim() : "";
-    const name = pName || currentUser.displayName || (currentUser.email ? currentUser.email.split("@")[0] : "Student");
-    label.textContent = pUniv ? `${name} (${pUniv})` : name;
+    const name = currentUser.displayName || (currentUser.email ? currentUser.email.split("@")[0] : "Student");
+    label.textContent = name;
   } else {
     label.textContent = "Sign In";
   }
-}
-
-function openCompleteProfileView() {
-  const modal = document.getElementById("authModal");
-  const profileView = document.getElementById("authProfileView");
-  const loginView = document.getElementById("authLoginView");
-  const completeView = document.getElementById("authCompleteProfileView");
-  if (profileView) profileView.style.display = "none";
-  if (loginView) loginView.style.display = "none";
-  if (completeView) completeView.style.display = "block";
-
-  const nameIn = document.getElementById("completeProfileNameInput");
-  const univIn = document.getElementById("completeProfileUnivInput");
-  if (nameIn) nameIn.value = (state.studentProfile && state.studentProfile.name) || (currentUser && currentUser.displayName) || "";
-  if (univIn) univIn.value = (state.studentProfile && state.studentProfile.university) || "";
-  if (modal) modal.classList.add("show");
-}
-
-async function saveCompletedStudentProfile() {
-  const nameIn = document.getElementById("completeProfileNameInput");
-  const univIn = document.getElementById("completeProfileUnivInput");
-  const errBox = document.getElementById("completeProfileErrorMsg");
-  const nameVal = (nameIn ? nameIn.value : "").trim();
-  const univVal = (univIn ? univIn.value : "").trim();
-
-  if (!nameVal || !univVal) {
-    if (errBox) {
-      errBox.textContent = "يُرجى إدخال الاسم بالكامل والجامعة لحفظ البيانات.";
-      errBox.style.display = "block";
-    }
-    return;
-  }
-  if (errBox) errBox.style.display = "none";
-
-  state.studentProfile = { name: nameVal, university: univVal };
-  saveState();
-
-  if (currentUser) {
-    try {
-      await currentUser.updateProfile({ displayName: nameVal });
-    } catch (e) {}
-    await syncProgressToCloud(true);
-  }
-  updateAuthTopBar();
-  closeAuthModal();
-  showToast(`🎓 تم حفظ بيانات الطالب: ${nameVal} — ${univVal}`);
 }
 
 async function syncProgressFromCloud(user) {
@@ -8757,15 +8487,6 @@ async function syncProgressFromCloud(user) {
       }
       if (data.eliminatedOpts) {
         state.eliminatedOpts = Object.assign({}, state.eliminatedOpts, data.eliminatedOpts || {});
-      }
-      if (data.studentProfile) {
-        if (!state.studentProfile) state.studentProfile = { name: "", university: "" };
-        if (data.studentProfile.name && !state.studentProfile.name) state.studentProfile.name = data.studentProfile.name;
-        if (data.studentProfile.university && !state.studentProfile.university) state.studentProfile.university = data.studentProfile.university;
-      }
-      if (data.university && (!state.studentProfile || !state.studentProfile.university)) {
-        if (!state.studentProfile) state.studentProfile = { name: "", university: "" };
-        state.studentProfile.university = data.university;
       }
 
       try {
@@ -8807,11 +8528,9 @@ async function syncProgressToCloud(isImmediate = false) {
       qStatus: state.qStatus || {},
       streak: state.streak || {},
       eliminatedOpts: state.eliminatedOpts || {},
-      studentProfile: state.studentProfile || { name: "", university: "" },
-      university: (state.studentProfile && state.studentProfile.university) || "",
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       userEmail: currentUser.email || "",
-      displayName: (state.studentProfile && state.studentProfile.name) || currentUser.displayName || "",
+      displayName: currentUser.displayName || "",
       userAgent: navigator.userAgent.substring(0, 100)
     };
 
@@ -8838,20 +8557,13 @@ function openAuthModal() {
     configWarn.style.display = "none";
   }
 
-  const completeView = document.getElementById("authCompleteProfileView");
-  if (completeView) completeView.style.display = "none";
-
   if (currentUser) {
     profileView.style.display = "block";
     loginView.style.display = "none";
 
-    const pName = (state.studentProfile && state.studentProfile.name) ? state.studentProfile.name.trim() : "";
-    const pUniv = (state.studentProfile && state.studentProfile.university) ? state.studentProfile.university.trim() : "";
-    const name = pName || currentUser.displayName || (currentUser.email ? currentUser.email.split("@")[0] : "Student");
+    const name = currentUser.displayName || (currentUser.email ? currentUser.email.split("@")[0] : "Student");
     const email = currentUser.email || "Google Account";
     document.getElementById("userDisplayName").textContent = name;
-    const univEl = document.getElementById("userUnivDisplay");
-    if (univEl) univEl.textContent = pUniv ? `🏛️ ${pUniv}` : "🏛️ لم يتم تحديد الجامعة بعد";
     document.getElementById("userEmailDisplay").textContent = email;
 
     const initial = name.charAt(0).toUpperCase();
@@ -8880,23 +8592,7 @@ function closeAuthModal() {
   if (modal) modal.classList.remove("show");
 }
 
-async function signInWithGoogle(source) {
-  const wName = (document.getElementById("welcomeStudentName")?.value || "").trim();
-  const wUniv = (document.getElementById("welcomeStudentUniv")?.value || "").trim();
-  const mName = (document.getElementById("authStudentNameInput")?.value || "").trim();
-  const mUniv = (document.getElementById("authStudentUnivInput")?.value || "").trim();
-
-  const enteredName = (source === "welcome" ? wName : mName) || wName || mName;
-  const enteredUniv = (source === "welcome" ? wUniv : mUniv) || wUniv || mUniv;
-
-  if (enteredName || enteredUniv) {
-    state.studentProfile = {
-      name: enteredName || (state.studentProfile && state.studentProfile.name) || "",
-      university: enteredUniv || (state.studentProfile && state.studentProfile.university) || ""
-    };
-    saveState();
-  }
-
+async function signInWithGoogle() {
   if (!isFirebaseConfigured()) {
     showToast("Please enter your firebaseConfig in the file to connect Google Authentication.");
     return;
@@ -8914,15 +8610,10 @@ async function signInWithGoogle(source) {
   provider.setCustomParameters({ prompt: "select_account" });
   try {
     const res = await firebase.auth().signInWithPopup(provider);
-    if ((!state.studentProfile || !state.studentProfile.name) && res.user && res.user.displayName) {
-      if (!state.studentProfile) state.studentProfile = { name: "", university: "" };
-      state.studentProfile.name = res.user.displayName;
-    }
-    saveState();
     closeAuthModal();
     const wOverlay = document.getElementById("welcomeAuthOverlay");
     if (wOverlay) wOverlay.classList.remove("show");
-    showToast("Welcome " + ((state.studentProfile && state.studentProfile.name) || res.user.displayName || "") + "! Signed in & Cloud Synced.");
+    showToast("Welcome " + ((res && res.user && res.user.displayName) || "") + "! Signed in & Cloud Synced.");
   } catch (err) {
     console.error("Google sign in error:", err);
     if (err && (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment")) {
@@ -8944,75 +8635,6 @@ async function signInWithGoogle(source) {
       wErrBox.textContent = msg;
       wErrBox.style.display = "block";
     }
-  }
-}
-
-async function handleEmailAuth(e) {
-  e.preventDefault();
-  if (!isFirebaseConfigured()) {
-    showToast("Please enter your firebaseConfig credentials in the file.");
-    return;
-  }
-  const email = document.getElementById("authEmailInput").value.trim();
-  const pass = document.getElementById("authPassInput").value;
-  const errBox = document.getElementById("authErrorMsg");
-  errBox.style.display = "none";
-
-  try {
-    await firebase.auth().signInWithEmailAndPassword(email, pass);
-    closeAuthModal();
-    showToast("Signed in successfully!");
-  } catch (err) {
-    console.error("Email login error:", err);
-    errBox.textContent = (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential" || err.code === "auth/wrong-password")
-      ? "Incorrect email or password."
-      : (err.message || "Failed to sign in.");
-    errBox.style.display = "block";
-  }
-}
-
-async function handleEmailSignUp() {
-  const sName = (document.getElementById("authStudentNameInput")?.value || "").trim();
-  const sUniv = (document.getElementById("authStudentUnivInput")?.value || "").trim();
-  const errBox = document.getElementById("authErrorMsg");
-  errBox.style.display = "none";
-
-  if (!sName || !sUniv) {
-    errBox.textContent = "يُرجى إدخال الاسم بالكامل والجامعة عند إنشاء حساب جديد.";
-    errBox.style.display = "block";
-    return;
-  }
-  state.studentProfile = { name: sName, university: sUniv };
-  saveState();
-
-  if (!isFirebaseConfigured()) {
-    showToast("Please enter your firebaseConfig credentials in the file.");
-    return;
-  }
-  const email = document.getElementById("authEmailInput").value.trim();
-  const pass = document.getElementById("authPassInput").value;
-
-  if (!email || !pass) {
-    errBox.textContent = "Please enter an email and password first.";
-    errBox.style.display = "block";
-    return;
-  }
-  if (pass.length < 6) {
-    errBox.textContent = "Password must be at least 6 characters.";
-    errBox.style.display = "block";
-    return;
-  }
-
-  try {
-    await firebase.auth().createUserWithEmailAndPassword(email, pass);
-    closeAuthModal();
-    showToast("Account created and signed in successfully!");
-  } catch (err) {
-    console.error("Sign up error:", err);
-    errBox.textContent = (err.code === "auth/email-already-in-use")
-      ? "This email is already in use. Please sign in."
-      : (err.message || "Could not create account.");
-    errBox.style.display = "block";
   }
 }
 
