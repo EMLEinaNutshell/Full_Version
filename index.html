@@ -8152,7 +8152,7 @@ function renderQuizPage(resetQTimer) {
     }, 20);
   }
 
-  const showPeerStats = isAnswered && !!currentUser && !!fbDb;
+  const showPeerStats = isAnswered && !!fbDb;
   const cachedPeerStats = showPeerStats ? getCachedQuestionPeerStats(q.number) : null;
   const peerDetails = cachedPeerStats ? computePeerOptionDetails(cachedPeerStats, q.options.length) : null;
 
@@ -8496,7 +8496,7 @@ function recordQuestionPeerVote(qnum, optIdx) {
 }
 
 async function fetchQuestionPeerStats(qnum) {
-  if (!currentUser || !fbDb) return null;
+  if (!fbDb) return null;
   if (_qPeerVotePromises[qnum]) {
     try { await _qPeerVotePromises[qnum]; } catch (e) {}
   }
@@ -8576,7 +8576,7 @@ function applyPeerStatsToDOM(qnum, detailsOrPcts) {
 
 async function loadAndRenderPeerStatsForQuestion(qnum, optCount) {
   const raw = await fetchQuestionPeerStats(qnum);
-  if (!raw || !currentUser) return;
+  if (!raw) return;
   const details = computePeerOptionDetails(raw, optCount);
   applyPeerStatsToDOM(qnum, details);
 }
