@@ -8,9 +8,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Start the large local payload early, without blocking HTML parsing. -->
-<link rel="preload" href="data-enc.js" as="script">
-
 <title>EMLE in a Nutshell — Clinical Library &amp; QBank</title>
 
 <style>
@@ -1469,7 +1466,7 @@
 
   .topbar-hl-tool {
 
-    display: inline-flex;
+    display: none;
 
     align-items: center;
 
@@ -1488,6 +1485,12 @@
     transition: all 0.15s ease;
 
     user-select: none;
+
+  }
+
+  body.study-reader-active .topbar-hl-tool {
+
+    display: inline-flex;
 
   }
 
@@ -1651,7 +1654,7 @@
 
   /* ================= TOPBAR FONT & TYPOGRAPHY CONTROLLER ================= */
   .font-ctrl-pill {
-    display: inline-flex;
+    display: none;
     align-items: center;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -1661,6 +1664,10 @@
     height: 30px;
     box-sizing: border-box;
     flex-shrink: 0;
+  }
+
+  body.study-reader-active .font-ctrl-pill {
+    display: inline-flex;
   }
   body.dark-mode .font-ctrl-pill {
     background: #1e1e2e;
@@ -8120,12 +8127,155 @@
 
 
 
+  /* ================= DATA BOOT LOADER (Web Worker) ================= */
+
+  #dataBootLoader {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: var(--bg);
+
+    transition: opacity 0.25s ease;
+
+  }
+
+  #dataBootLoader.hidden {
+
+    display: none;
+
+  }
+
+  #dataBootLoader.is-fading {
+
+    opacity: 0;
+
+    pointer-events: none;
+
+  }
+
+  .data-boot-card {
+
+    width: min(360px, calc(100vw - 32px));
+
+    background: var(--surface);
+
+    border: 1.5px solid var(--teal-border);
+
+    border-radius: 14px;
+
+    padding: 28px 24px;
+
+    text-align: center;
+
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+
+  }
+
+  .data-boot-spinner {
+
+    width: 40px;
+
+    height: 40px;
+
+    margin: 0 auto 16px;
+
+    border: 3px solid var(--teal-border);
+
+    border-top-color: var(--teal);
+
+    border-radius: 50%;
+
+    animation: dataBootSpin 0.75s linear infinite;
+
+  }
+
+  #dataBootLoader.is-error .data-boot-spinner {
+
+    display: none;
+
+  }
+
+  @keyframes dataBootSpin {
+
+    to { transform: rotate(360deg); }
+
+  }
+
+  .data-boot-title {
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    color: var(--text);
+
+    margin-bottom: 6px;
+
+  }
+
+  .data-boot-status {
+
+    font-size: 13px;
+
+    color: var(--text-muted);
+
+    line-height: 1.45;
+
+    min-height: 1.45em;
+
+  }
+
+  .data-boot-retry {
+
+    display: none;
+
+    margin-top: 16px;
+
+    background: var(--teal);
+
+    color: #fff;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 10px 18px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+  }
+
+  .data-boot-retry:hover {
+
+    background: var(--teal-hover);
+
+  }
+
+  #dataBootLoader.is-error .data-boot-retry {
+
+    display: inline-block;
+
+  }
+
+
+
 </style>
 
-  <!-- Firebase SDKs (Compat for pure browser CDN) -->
-
-
-
+  <!-- Firebase SDKs loaded lazily via loadFirebaseSdk() after vault boot -->
 
 
 
@@ -8451,6 +8601,12 @@
 
       gap: 6px 8px;
 
+      flex-wrap: nowrap;
+
+      overflow-x: auto;
+
+      -webkit-overflow-scrolling: touch;
+
     }
 
     .topbar-left {
@@ -8473,6 +8629,8 @@
 
       justify-content: flex-end;
 
+      flex-wrap: nowrap;
+
     }
 
     .pomo-pill {
@@ -8482,6 +8640,25 @@
       font-size: 11.5px;
 
       gap: 4px;
+
+    }
+
+    .pomo-pill .pomo-label {
+
+      display: none;
+
+    }
+
+    /* Reader tools already gated by .study-reader-active; keep palette compact on phones */
+    body.study-reader-active .topbar-hl-palette {
+
+      display: none;
+
+    }
+
+    body.study-reader-active .topbar-hl-tool.pen-active .topbar-hl-palette {
+
+      display: inline-flex;
 
     }
 
@@ -11227,6 +11404,24 @@ function syncAdminCopyAccess() {
 
 
 
+<div id="dataBootLoader" role="status" aria-live="polite" aria-busy="true">
+
+  <div class="data-boot-card">
+
+    <div class="data-boot-spinner" aria-hidden="true"></div>
+
+    <div class="data-boot-title" id="dataBootTitle">Loading EMLE library…</div>
+
+    <div class="data-boot-status" id="dataBootStatus">Preparing secure vault</div>
+
+    <button type="button" class="data-boot-retry" id="dataBootRetryBtn" onclick="retryDataBoot()">Retry</button>
+
+  </div>
+
+</div>
+
+
+
 <!-- ================= FIXED STICKY TOP BAR (WITH QUIZ TIMERS & POMODORO) ================= -->
 
 <header class="topbar" id="mainTopbar">
@@ -12571,7 +12766,7 @@ function syncAdminCopyAccess() {
 
     </div>
 
-    <input type="text" class="search-input-box" id="globalSearchInput" placeholder="Type any disease, drug, sign, lab, or question # (e.g. Parkland, MgSO4, Boerhaave, 812)..." oninput="runGlobalSearch(this.value)" />
+    <input type="text" class="search-input-box" id="globalSearchInput" placeholder="Type any disease, drug, sign, lab, or question # (e.g. Parkland, MgSO4, Boerhaave, 812)..." oninput="onGlobalSearchInput(this.value)" />
 
     <div class="search-results-list" id="globalSearchResults">
 
@@ -13489,12 +13684,86 @@ function syncAdminCopyAccess() {
 
 
 
-<script defer src="data-enc.js"></script>
 <script>
 
 let DATA = {"tree":[],"topics":[],"questions":[]};
 
-// DATA_SEC_ENC loaded from data-enc.js
+let DATA_INDEX = null;
+let _sidebarTreeDirty = true;
+let _statsCache = null;
+let _globalSearchTimer = null;
+let _firebaseSdkPromise = null;
+
+function invalidateStatsCache() {
+  _statsCache = null;
+}
+
+function markSidebarTreeDirty() {
+  _sidebarTreeDirty = true;
+}
+
+function buildDataIndexes(data) {
+  const topicById = Object.create(null);
+  const questionByNumber = Object.create(null);
+  const topicsByChapter = Object.create(null);
+  const questionsByChapter = Object.create(null);
+  const questionsByTopic = Object.create(null);
+  const topics = (data && data.topics) || [];
+  const questions = (data && data.questions) || [];
+  for (let i = 0; i < topics.length; i++) {
+    const t = topics[i];
+    topicById[t.id] = t;
+    if (!topicsByChapter[t.chapter_id]) topicsByChapter[t.chapter_id] = [];
+    topicsByChapter[t.chapter_id].push(t);
+  }
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    questionByNumber[q.number] = q;
+    if (!questionsByChapter[q.chapter_id]) questionsByChapter[q.chapter_id] = [];
+    questionsByChapter[q.chapter_id].push(q);
+    if (!questionsByTopic[q.topic_id]) questionsByTopic[q.topic_id] = [];
+    questionsByTopic[q.topic_id].push(q);
+  }
+  DATA_INDEX = { topicById, questionByNumber, topicsByChapter, questionsByChapter, questionsByTopic };
+  invalidateStatsCache();
+  markSidebarTreeDirty();
+  return DATA_INDEX;
+}
+
+function getTopicsForChapter(chapId) {
+  if (DATA_INDEX && DATA_INDEX.topicsByChapter[chapId]) return DATA_INDEX.topicsByChapter[chapId];
+  return (DATA.topics || []).filter(t => t.chapter_id === chapId);
+}
+
+function getQuestionsForChapter(chapId) {
+  if (DATA_INDEX && DATA_INDEX.questionsByChapter[chapId]) return DATA_INDEX.questionsByChapter[chapId];
+  return (DATA.questions || []).filter(q => q.chapter_id === chapId);
+}
+
+function getQuestionsForTopic(topicId) {
+  if (DATA_INDEX && DATA_INDEX.questionsByTopic[topicId]) return DATA_INDEX.questionsByTopic[topicId];
+  return (DATA.questions || []).filter(q => q.topic_id === topicId);
+}
+
+function findTopicById(topicId) {
+  if (DATA_INDEX && DATA_INDEX.topicById[topicId]) return DATA_INDEX.topicById[topicId];
+  return (DATA.topics || []).find(x => x.id === topicId);
+}
+
+function findQuestionByNumber(qnum) {
+  if (DATA_INDEX && Object.prototype.hasOwnProperty.call(DATA_INDEX.questionByNumber, qnum)) {
+    return DATA_INDEX.questionByNumber[qnum];
+  }
+  return (DATA.questions || []).find(x => x.number === qnum);
+}
+
+function collapseChaptersForMobile() {
+  if (window.innerWidth > 820) return;
+  const keys = Object.keys(state.openChaps || {});
+  for (let i = 0; i < keys.length; i++) state.openChaps[keys[i]] = false;
+  markSidebarTreeDirty();
+}
+
 
 const STORAGE_KEY = "emle_amboss_portal_v16";
 
@@ -13696,6 +13965,7 @@ function saveState(immediate = false) {
 }
 
 function _doSaveState() {
+  invalidateStatsCache();
   try {
     safeLocalStorageSet(STORAGE_KEY, JSON.stringify({
       topicsRead: state.topicsRead,
@@ -14599,19 +14869,6 @@ const CLINICAL_TERMS = {
 
 // High-Performance Memoized Annotator with Pre-Compiled Regexes
 const _medAnnotCache = new Map();
-let _medAnnotCacheChars = 0;
-const MED_ANNOT_CACHE_MAX_CHARS = 2 * 1024 * 1024;
-function cacheMedicalAnnotation(source, result) {
-  const size = source.length + result.length;
-  if (size > MED_ANNOT_CACHE_MAX_CHARS) return;
-  while (_medAnnotCache.size && (_medAnnotCache.size >= 512 || _medAnnotCacheChars + size > MED_ANNOT_CACHE_MAX_CHARS)) {
-    const oldest = _medAnnotCache.keys().next().value;
-    _medAnnotCacheChars -= oldest.length + _medAnnotCache.get(oldest).length;
-    _medAnnotCache.delete(oldest);
-  }
-  _medAnnotCache.set(source, result);
-  _medAnnotCacheChars += size;
-}
 let _precompiledTerms = null;
 let _precompiledAbbrevs = null;
 
@@ -14622,8 +14879,7 @@ function _getPrecompiledGlossaries() {
       const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       return {
         rx: new RegExp(`(^|[^\\w>@])(${escaped})(?![\\w<@])`, "gi"),
-        entry: CLINICAL_TERMS[term],
-        literal: term.toLowerCase()
+        entry: CLINICAL_TERMS[term]
       };
     });
   }
@@ -14643,12 +14899,7 @@ function _getPrecompiledGlossaries() {
 
 function annotateMedicalHTML(htmlStr) {
   if (!htmlStr) return "";
-  if (_medAnnotCache.has(htmlStr)) {
-    const cached = _medAnnotCache.get(htmlStr);
-    _medAnnotCache.delete(htmlStr);
-    _medAnnotCache.set(htmlStr, cached);
-    return cached;
-  }
+  if (_medAnnotCache.has(htmlStr)) return _medAnnotCache.get(htmlStr);
 
   const container = document.createElement("div");
   container.innerHTML = htmlStr;
@@ -14691,10 +14942,8 @@ function annotateMedicalHTML(htmlStr) {
     });
 
     // 2. Replace Clinical Terms with placeholders
-    const lowerText = safeHtml.toLowerCase();
     for (let i = 0; i < terms.length; i++) {
       const item = terms[i];
-      if (!lowerText.includes(item.literal)) continue;
       safeHtml = safeHtml.replace(item.rx, (_, prefix, m) => {
         return prefix + storeToken(`<span class="med-tip" data-cat="${escapeAttr(item.entry[0])}" data-title="${escapeAttr(item.entry[1])}" data-body="${escapeAttr(item.entry[2])}">${m}</span>`);
       });
@@ -14703,7 +14952,6 @@ function annotateMedicalHTML(htmlStr) {
     // 3. Replace Abbreviations with placeholders
     for (let i = 0; i < abbrevs.length; i++) {
       const item = abbrevs[i];
-      if (!safeHtml.includes(item.abbr)) continue;
       safeHtml = safeHtml.replace(item.rx, (_, prefix, m) => {
         return prefix + storeToken(`<span class="med-tip" data-cat="${escapeAttr(item.entry[0])}" data-title="${escapeAttr(item.abbr + ' — ' + item.entry[1])}" data-body="${escapeAttr(item.entry[2])}">${m}</span>`);
       });
@@ -14718,7 +14966,8 @@ function annotateMedicalHTML(htmlStr) {
   });
 
   const res = container.innerHTML;
-  cacheMedicalAnnotation(htmlStr, res);
+  if (_medAnnotCache.size > 2500) _medAnnotCache.clear();
+  _medAnnotCache.set(htmlStr, res);
   return res;
 }
 
@@ -15146,12 +15395,6 @@ function playWarningBeep() {
 
       osc.stop(ctx.currentTime + i * 0.14 + 0.14);
 
-      osc.onended = () => {
-        osc.disconnect();
-        g.disconnect();
-        if (i === 1) ctx.close().catch(() => {});
-      };
-
     });
 
   } catch (e) {}
@@ -15376,7 +15619,9 @@ function toggleDivNode(divId) {
 
   state.openDivs[divId] = !state.openDivs[divId];
 
-  renderSidebarTree();
+  markSidebarTreeDirty();
+
+  renderSidebarTree(true);
 
 }
 
@@ -15388,7 +15633,9 @@ function toggleChapNode(chapId, event) {
 
   state.openChaps[chapId] = !state.openChaps[chapId];
 
-  renderSidebarTree();
+  markSidebarTreeDirty();
+
+  renderSidebarTree(true);
 
 }
 
@@ -15399,6 +15646,8 @@ function openChapter(chapId) {
   state.currentChapterId = chapId;
 
   state.openDivs["div_im"] = true;
+
+  if (!state.openChaps[chapId]) markSidebarTreeDirty();
 
   state.openChaps[chapId] = true;
 
@@ -15424,11 +15673,15 @@ function handleChapClick(chapId, available) {
 
 
 
-function renderSidebarTree() {
+function updateSidebarNavHighlights() {
 
-  document.getElementById("sbHomeLink").classList.toggle("active-nav", state.currentView === "home");
+  const home = document.getElementById("sbHomeLink");
 
-  document.getElementById("sbQuizzesLink").classList.toggle("active-nav", state.currentView === "quizzes");
+  if (home) home.classList.toggle("active-nav", state.currentView === "home");
+
+  const quizzes = document.getElementById("sbQuizzesLink");
+
+  if (quizzes) quizzes.classList.toggle("active-nav", state.currentView === "quizzes");
 
   const sbEx = document.getElementById("sbExamsLink");
 
@@ -15442,13 +15695,69 @@ function renderSidebarTree() {
 
   if (sbSp) sbSp.classList.toggle("active-nav", state.currentView === "studyplan");
 
+  const container = document.getElementById("sidebarTreeContainer");
+
+  if (!container) return;
+
+  container.querySelectorAll(".active-chap").forEach(el => el.classList.remove("active-chap"));
+
+  container.querySelectorAll(".active-topic").forEach(el => el.classList.remove("active-topic"));
+
+  if (state.currentView === "chapter" && state.currentChapterId) {
+
+    const chapRow = container.querySelector('.tree-chap-row[onclick*="\'' + state.currentChapterId + '\'"]');
+
+    if (chapRow) chapRow.classList.add("active-chap");
+
+  }
+
+  if (state.currentView === "topic" && state.currentTopicId) {
+
+    const topicRow = container.querySelector('.tree-topic-row[onclick*="\'' + state.currentTopicId + '\'"]');
+
+    if (topicRow) topicRow.classList.add("active-topic");
+
+    const tObj = findTopicById(state.currentTopicId);
+
+    if (tObj) {
+
+      const chapRow = container.querySelector('.tree-chap-row[onclick*="\'' + tObj.chapter_id + '\'"]');
+
+      if (chapRow) chapRow.classList.add("active-chap");
+
+    }
+
+  }
+
+}
+
+
+
+function renderSidebarTree(forceFull) {
+
+  updateSidebarNavHighlights();
+
   const sbYf = document.getElementById("sidebarYieldFilterBar");
 
   if (sbYf) sbYf.innerHTML = renderSidebarYieldFilterHTML();
 
 
 
+  if (!forceFull && !_sidebarTreeDirty) {
+
+    updateSidebarNavHighlights();
+
+    return;
+
+  }
+
+
+
   const container = document.getElementById("sidebarTreeContainer");
+
+  if (!container) return;
+
+
 
   container.innerHTML = DATA.tree.map(div => {
 
@@ -15496,15 +15805,19 @@ function renderSidebarTree() {
 
       if (ch.has_topics) {
 
-        const chapTopics = DATA.topics.filter(t => t.chapter_id === ch.id && topicMatchesYieldFilter(t));
+        let topicsHTML = "";
 
-        const topicsHTML = chapTopics.map(t => {
+        if (isChapOpen) {
 
-          const isTopicActive = (state.currentView === "topic" && state.currentTopicId === t.id);
+          const chapTopics = getTopicsForChapter(ch.id).filter(t => topicMatchesYieldFilter(t));
 
-          const isRead = !!state.topicsRead[t.id];
+          topicsHTML = chapTopics.map(t => {
 
-          return `
+            const isTopicActive = (state.currentView === "topic" && state.currentTopicId === t.id);
+
+            const isRead = !!state.topicsRead[t.id];
+
+            return `
 
             <div class="tree-topic-row ${isTopicActive ? 'active-topic' : ''}" onclick="navigateTo('topic', '${t.id}')">
 
@@ -15518,7 +15831,9 @@ function renderSidebarTree() {
 
           `;
 
-        }).join("");
+          }).join("");
+
+        }
 
 
 
@@ -15606,7 +15921,12 @@ function renderSidebarTree() {
 
   }).join("");
 
+
+
+  _sidebarTreeDirty = false;
+
 }
+
 
 
 
@@ -15990,6 +16310,11 @@ function navigateTo(view, param, navOpts) {
 
   }
 
+  // Close blocking session-start overlay when navigating anywhere except staying in quiz flow setup
+  if (view !== "quiz") {
+    try { closeSessionChoiceModal(); } catch (e) {}
+  }
+
   state.attemptsDropdownOpen = false;
 
 
@@ -16000,11 +16325,13 @@ function navigateTo(view, param, navOpts) {
 
     state.currentTopicId = param;
 
-    const tObj = DATA.topics.find(x => x.id === param);
+    const tObj = findTopicById(param);
 
     if (tObj) {
 
       state.currentChapterId = tObj.chapter_id;
+
+      if (!state.openChaps[tObj.chapter_id]) markSidebarTreeDirty();
 
       state.openChaps[tObj.chapter_id] = true;
 
@@ -16052,6 +16379,8 @@ function navigateTo(view, param, navOpts) {
 
   }
 
+  try { updateStudyReaderChrome(view); } catch (e) {}
+
   syncTopbarHeight();
 
   requestAnimationFrame(syncTopbarHeight);
@@ -16088,7 +16417,7 @@ function navigateTo(view, param, navOpts) {
   }
 
   try { renderBreadcrumbs(); } catch(e) {}
-  try { renderSidebarTree(); } catch(e) {}
+  try { renderSidebarTree(false); } catch(e) {}
 
   if (window.innerWidth <= 820) {
 
@@ -16194,7 +16523,7 @@ function renderBreadcrumbs() {
 
   } else if (v === "topic") {
 
-    const t = DATA.topics.find(x => x.id === state.currentTopicId);
+    const t = findTopicById(state.currentTopicId);
 
     const tChName = t ? getChapterTitle(t.chapter_id) : chName;
 
@@ -16226,7 +16555,7 @@ function renderBreadcrumbs() {
 
       const tid = state.quizFilter.replace("topic_", "");
 
-      const t = DATA.topics.find(x => x.id === tid);
+      const t = findTopicById(tid);
 
       quizTitle = t ? `${t.title} Quiz` : "Topic Quiz";
 
@@ -16280,6 +16609,8 @@ function renderBreadcrumbs() {
 
 function getStats() {
 
+  if (_statsCache) return _statsCache;
+
   let readCount = 0;
 
   DATA.topics.forEach(t => { if (state.topicsRead[t.id]) readCount++; });
@@ -16310,7 +16641,9 @@ function getStats() {
 
   });
 
-  return { readCount, totalTopics: DATA.topics.length, correct, hint, wrong, flagged, answered, totalQs: DATA.questions.length };
+  _statsCache = { readCount, totalTopics: DATA.topics.length, correct, hint, wrong, flagged, answered, totalQs: DATA.questions.length };
+
+  return _statsCache;
 
 }
 
@@ -16318,9 +16651,9 @@ function getStats() {
 
 function getChapterStats(chapId) {
 
-  const cTopics = DATA.topics.filter(t => t.chapter_id === chapId);
+  const cTopics = getTopicsForChapter(chapId);
 
-  const cQs = DATA.questions.filter(q => q.chapter_id === chapId);
+  const cQs = getQuestionsForChapter(chapId);
 
   let readCount = 0;
 
@@ -16609,6 +16942,20 @@ document.addEventListener("keydown", e => {
 
 
 
+function onGlobalSearchInput(query) {
+  const q = (query || "").trim();
+  if (q.length < 2) {
+    if (_globalSearchTimer) { clearTimeout(_globalSearchTimer); _globalSearchTimer = null; }
+    runGlobalSearch(query);
+    return;
+  }
+  if (_globalSearchTimer) clearTimeout(_globalSearchTimer);
+  _globalSearchTimer = setTimeout(() => {
+    _globalSearchTimer = null;
+    runGlobalSearch(query);
+  }, 250);
+}
+
 function runGlobalSearch(query) {
 
   const box = document.getElementById("globalSearchResults");
@@ -16627,11 +16974,13 @@ function runGlobalSearch(query) {
 
 
 
-  const matchedTopics = DATA.topics.filter(t =>
+  const matchedTopics = DATA.topics.filter(t => {
 
-    t.title.toLowerCase().includes(q) || (t.vip_html && t.vip_html.toLowerCase().includes(q))
+    if (t.title.toLowerCase().includes(q)) return true;
 
-  ).slice(0, 12);
+    return !!(t.vip_html && t.vip_html.toLowerCase().includes(q));
+
+  }).slice(0, 12);
 
 
 
@@ -16711,7 +17060,7 @@ function openSearchedQuestion(qnum) {
 
   closeSearchModal();
 
-  const q = DATA.questions.find(x => x.number === qnum);
+  const q = findQuestionByNumber(qnum);
 
   if (!q) return;
 
@@ -19151,7 +19500,7 @@ function renderAnalyticsPage() {
 
       if (ch.available) {
 
-        const cTopics = DATA.topics.filter(t => t.chapter_id === ch.id);
+        const cTopics = getTopicsForChapter(ch.id);
 
         const wSum = cTopics.reduce((a, t) => a + (t.weighted_freq || t.q_count || 0), 0);
 
@@ -19957,27 +20306,27 @@ function applyPresetChapterOrder(mode) {
 
     // Sort chapters by total weighted exam appearances descending
 
-    state.chapterOrder = def.slice().sort((a, b) => {
+    const weightByChap = Object.create(null);
 
-      const wA = DATA.topics.filter(t => t.chapter_id === a).reduce((s, t) => s + (t.weighted_freq || 0), 0);
+    def.forEach(cid => {
 
-      const wB = DATA.topics.filter(t => t.chapter_id === b).reduce((s, t) => s + (t.weighted_freq || 0), 0);
-
-      return wB - wA;
+      weightByChap[cid] = getTopicsForChapter(cid).reduce((s, t) => s + (t.weighted_freq || 0), 0);
 
     });
+
+    state.chapterOrder = def.slice().sort((a, b) => weightByChap[b] - weightByChap[a]);
 
   } else if (mode === "shortest") {
 
-    state.chapterOrder = def.slice().sort((a, b) => {
+    const qCountByChap = Object.create(null);
 
-      const qA = DATA.questions.filter(q => q.chapter_id === a).length;
+    def.forEach(cid => {
 
-      const qB = DATA.questions.filter(q => q.chapter_id === b).length;
-
-      return qA - qB;
+      qCountByChap[cid] = getQuestionsForChapter(cid).length;
 
     });
+
+    state.chapterOrder = def.slice().sort((a, b) => qCountByChap[a] - qCountByChap[b]);
 
   }
 
@@ -20589,7 +20938,9 @@ function toggleYieldFilter(tierId, targetView) {
 
   state.yieldFilters = Array.from(s);
 
-  renderSidebarTree();
+  markSidebarTreeDirty();
+
+  renderSidebarTree(true);
 
   if (state.currentView === "library") renderLibrary();
 
@@ -20647,7 +20998,7 @@ function renderLibrary() {
 
       if (ch.available) {
 
-        const matchingTopics = DATA.topics.filter(t => t.chapter_id === ch.id && topicMatchesYieldFilter(t));
+        const matchingTopics = getTopicsForChapter(ch.id).filter(t => topicMatchesYieldFilter(t));
 
         if (matchingTopics.length === 0) return "";
 
@@ -20791,7 +21142,7 @@ function renderQuizzesHub() {
 
       if (ch.available) {
 
-        const matchingTopics = DATA.topics.filter(t => t.chapter_id === ch.id && topicMatchesYieldFilter(t));
+        const matchingTopics = getTopicsForChapter(ch.id).filter(t => topicMatchesYieldFilter(t));
 
         if (matchingTopics.length === 0) return "";
 
@@ -20897,9 +21248,9 @@ function renderChapter() {
 
   const chapId = state.currentChapterId || "cardiology";
 
-  const chapTopics = DATA.topics.filter(t => t.chapter_id === chapId && topicMatchesYieldFilter(t));
+  const chapTopics = getTopicsForChapter(chapId).filter(t => topicMatchesYieldFilter(t));
 
-  const chapQs = DATA.questions.filter(q => q.chapter_id === chapId);
+  const chapQs = getQuestionsForChapter(chapId);
 
   const chTitle = getChapterTitle(chapId);
 
@@ -20969,7 +21320,7 @@ function renderTopicPage(topicId) {
 
   if (!DATA || !Array.isArray(DATA.topics) || DATA.topics.length === 0) return;
 
-  let t = DATA.topics.find(x => x.id === topicId);
+  let t = findTopicById(topicId);
 
   if (!t) {
     t = DATA.topics[0];
@@ -21086,13 +21437,17 @@ function toggleTopicRead(topicId) {
 
   state.topicsRead[topicId] = !state.topicsRead[topicId];
 
+  markSidebarTreeDirty();
+
+  invalidateStatsCache();
+
   if (state.topicsRead[topicId]) recordStudyActivity(false);
 
   saveState();
 
   renderTopicPage(topicId);
 
-  renderSidebarTree();
+  renderSidebarTree(true);
 
 }
 
@@ -21108,7 +21463,7 @@ function computeQuestionsForFilter(filter) {
 
     const tid = filter.replace("topic_", "");
 
-    return DATA.questions.filter(q => q.topic_id === tid);
+    return getQuestionsForTopic(tid).slice();
 
   }
 
@@ -21116,9 +21471,9 @@ function computeQuestionsForFilter(filter) {
 
     const cid = filter.replace("chapter_", "");
 
-    const allowedTids = new Set(DATA.topics.filter(t => t.chapter_id === cid && topicMatchesYieldFilter(t)).map(t => t.id));
+    const allowedTids = new Set(getTopicsForChapter(cid).filter(t => topicMatchesYieldFilter(t)).map(t => t.id));
 
-    return DATA.questions.filter(q => q.chapter_id === cid && allowedTids.has(q.topic_id));
+    return getQuestionsForChapter(cid).filter(q => allowedTids.has(q.topic_id));
 
   }
 
@@ -21212,7 +21567,7 @@ function getQuizSessionDisplayName(filter) {
 
     const tid = filter.replace("topic_", "");
 
-    const t = DATA.topics.find(x => x.id === tid);
+    const t = findTopicById(tid);
 
     return t ? `${t.num}. ${t.title}` : "Topic Quiz";
 
@@ -21558,21 +21913,55 @@ function toggleExpandExamTags() {
 
 
 
-let _lastTopbarH = 0;
-let _topbarRafId = null;
+function updateStudyReaderChrome(view) {
+
+  const readerViews = (view === "topic" || view === "quiz");
+
+  document.body.classList.toggle("study-reader-active", readerViews);
+
+  const hlTool = document.getElementById("topbarHlTool");
+
+  const fontPill = document.getElementById("fontCtrlPill");
+
+  if (hlTool) {
+
+    hlTool.setAttribute("aria-hidden", readerViews ? "false" : "true");
+
+    if (!readerViews) {
+
+      try {
+
+        // Turn off auto-highlight pen outside reader contexts so home clicks don't feel "broken"
+        if (hlTool.classList.contains("pen-active") && typeof toggleHighlightPen === "function") {
+
+          toggleHighlightPen();
+
+        }
+
+      } catch (e) {}
+
+    }
+
+  }
+
+  if (fontPill) fontPill.setAttribute("aria-hidden", readerViews ? "false" : "true");
+
+}
+
+
 
 function syncTopbarHeight() {
-  if (_topbarRafId) cancelAnimationFrame(_topbarRafId);
-  _topbarRafId = requestAnimationFrame(() => {
-    _topbarRafId = null;
-    const bar = document.getElementById("mainTopbar") || document.querySelector(".topbar");
-    if (!bar) return;
-    const h = Math.max(46, Math.ceil(bar.offsetHeight || 54));
-    if (Math.abs(h - _lastTopbarH) >= 2) {
-      _lastTopbarH = h;
-      document.documentElement.style.setProperty("--topbar-h", h + "px");
-    }
-  });
+
+  const bar = document.getElementById("mainTopbar") || document.querySelector(".topbar");
+
+  if (!bar) return;
+
+  const rect = bar.getBoundingClientRect();
+
+  const h = Math.max(46, Math.ceil(rect.height || bar.offsetHeight || 54));
+
+  document.documentElement.style.setProperty("--topbar-h", h + "px");
+
 }
 
 
@@ -21639,7 +22028,7 @@ function renderSplitNotesPane() {
 
   const q = qs[state.quizIndex];
 
-  const t = DATA.topics.find(x => x.id === q.topic_id);
+  const t = findTopicById(q.topic_id);
 
   if (!t) return;
 
@@ -21647,8 +22036,7 @@ function renderSplitNotesPane() {
 
   state.currentQuizTopicId = t.id;
 
-  let notesSource = t.vip_html;
-  let hasSavedHighlights = false;
+  let snpNotesBody = annotateMedicalHTML(t.vip_html);
 
   try {
 
@@ -21662,8 +22050,7 @@ function renderSplitNotesPane() {
 
       } else {
 
-        notesSource = savedHl;
-        hasSavedHighlights = true;
+        snpNotesBody = savedHl;
 
       }
 
@@ -21672,12 +22059,6 @@ function renderSplitNotesPane() {
   } catch(e) {}
 
 
-
-  // Reuse the notes DOM while answering questions from the same topic.
-  if (pane._notesTopic === t && pane._notesSource === notesSource) return;
-  const snpNotesBody = hasSavedHighlights ? notesSource : annotateMedicalHTML(notesSource);
-  pane._notesTopic = t;
-  pane._notesSource = notesSource;
 
   pane.innerHTML = `
 
@@ -23286,7 +23667,7 @@ function selectQuizOption(qnum, optIdx) {
 
   }
 
-  const q = DATA.questions.find(x => x.number === qnum);
+  const q = findQuestionByNumber(qnum);
 
   if (!q) return;
 
@@ -23492,48 +23873,31 @@ function formatFirebaseAuthError(err) {
 
 
 
-// Cloud SDKs must never hold up the library or question bank.
-// Keep one shared attempt; failed downloads can be retried from Sign In.
-let _firebaseSdkPromise = null;
-const _firebaseScriptLoads = new Map();
-function loadFirebaseSDKs() {
+function loadFirebaseSdk() {
+  if (typeof firebase !== "undefined") return Promise.resolve(true);
   if (_firebaseSdkPromise) return _firebaseSdkPromise;
-  const base = "https://www.gstatic.com/firebasejs/10.8.0/";
-  const load = (name, ready) => {
-    if (ready()) return Promise.resolve();
-    if (_firebaseScriptLoads.has(name)) return _firebaseScriptLoads.get(name);
-    const pending = new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = base + name;
-      script.async = true;
-      script.onload = () => ready() ? resolve() : reject(new Error("SDK unavailable: " + name));
-      script.onerror = () => {
-        script.remove();
-        reject(new Error("SDK download failed: " + name));
-      };
-      document.head.appendChild(script);
-    }).catch(err => { _firebaseScriptLoads.delete(name); throw err; });
-    _firebaseScriptLoads.set(name, pending);
-    return pending;
-  };
-  _firebaseSdkPromise = load("firebase-app-compat.js", () => typeof firebase !== "undefined")
-    .then(() => Promise.all([
-      load("firebase-auth-compat.js", () => typeof firebase.auth === "function"),
-      load("firebase-firestore-compat.js", () => typeof firebase.firestore === "function")
-    ]))
-    .catch(err => { _firebaseSdkPromise = null; throw err; });
+  const urls = [
+    "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js",
+    "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js",
+    "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"
+  ];
+  _firebaseSdkPromise = urls.reduce((chain, src) => {
+    return chain.then(() => new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = false;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error("Failed to load " + src));
+      document.head.appendChild(s);
+    }));
+  }, Promise.resolve()).catch(err => {
+    _firebaseSdkPromise = null;
+    throw err;
+  });
   return _firebaseSdkPromise;
 }
 
-function startCloudServices() {
-  return loadFirebaseSDKs().then(() => initFirebase()).catch(err => {
-    console.warn("Cloud services unavailable; local study remains available:", err);
-    updateSyncIndicator("local");
-    return false;
-  });
-}
-
-function initFirebase() {
+async function initFirebase() {
 
   if (!isFirebaseConfigured()) {
 
@@ -23546,6 +23910,12 @@ function initFirebase() {
   }
 
   try {
+
+    try { await loadFirebaseSdk(); } catch (sdkErr) {
+      console.warn("Firebase SDK load failed:", sdkErr);
+      updateSyncIndicator("error");
+      return false;
+    }
 
     if (typeof firebase !== "undefined") {
 
@@ -23820,7 +24190,7 @@ function updateAuthTopBar() {
 
 
 async function syncProgressFromCloud(user) {
-  if (!user || !fbDb) return false;
+  if (!user || !fbDb) return;
   try {
     updateSyncIndicator("syncing");
     const docRef = fbDb.collection("users").doc(user.uid);
@@ -23833,7 +24203,6 @@ async function syncProgressFromCloud(user) {
       snap = await docRef.get();
     }
 
-    if (!currentUser || currentUser.uid !== user.uid) return false;
     if (snap && snap.exists) {
       const data = snap.data() || {};
 
@@ -23904,65 +24273,38 @@ async function syncProgressFromCloud(user) {
       // 5. Save locally
       saveState(true);
 
-      // Render downloaded progress before waiting for the upload acknowledgment.
-      // The upload queue owns pending changes, including answers made while offline.
+      // 6. CRUCIAL TWO-WAY SYNC: Immediately upload merged progress back to cloud
+      // Guarantees all questions from all browsers are consolidated in cloud
+      await syncProgressToCloud(true);
 
-      if (DATA && Array.isArray(DATA.topics) && DATA.topics.length > 0) {
-        if (state.currentView === "quizzes") {
-          if (typeof renderQuizzesHub === "function") renderQuizzesHub();
-        } else if (state.currentView === "library") {
-          if (typeof renderLibrary === "function") renderLibrary();
-        } else if (state.currentView === "quiz") {
-          if (typeof renderQuizPage === "function") renderQuizPage(false);
-        } else if (typeof navigateTo === "function" && state.currentView) {
-          navigateTo(state.currentView, state.currentTopicId);
-        }
+      if (typeof navigateTo === "function" && state.currentView && DATA && Array.isArray(DATA.topics) && DATA.topics.length > 0) {
+        navigateTo(state.currentView, state.currentTopicId);
       }
       if (typeof renderStreakWidget === "function") {
         renderStreakWidget();
       }
-      if (!await syncProgressToCloud(true)) return false;
+      updateSyncIndicator("synced");
       showToast("Cloud progress loaded & synchronized successfully!");
     } else {
       // First time signing in on this account: push local progress to cloud
-      if (!await syncProgressToCloud(true)) return false;
+      await syncProgressToCloud(true);
       if (state.currentView === "quiz" && typeof renderQuizPage === "function") {
         renderQuizPage(false);
       }
       showToast("Account linked & local progress uploaded to cloud!");
     }
-    return true;
   } catch (err) {
     console.error("Cloud fetch error:", err);
     updateSyncIndicator("error");
-    return false;
   }
 }
 
 
-let _cloudUploadJob = null;
-
 async function syncProgressToCloud(isImmediate = false) {
 
-  if (!currentUser || !fbDb) return false;
-
-  _hasPendingCloudSync = true;
-  clearTimeout(_cloudSyncTimer);
-  const user = currentUser;
-  if (_cloudUploadJob && _cloudUploadJob.uid === user.uid) {
-    return _cloudUploadJob.promise;
-  }
-  const job = { uid: user.uid, promise: null };
-  _cloudUploadJob = job;
-  job.promise = (async () => {
+  if (!currentUser || !fbDb) return;
 
   try {
-
-    // Coalesce changes made during a slow/offline write into one latest snapshot.
-    // Never queue a new full progress document for each answer while one is pending.
-    while (_cloudUploadJob === job && currentUser && currentUser.uid === user.uid) {
-
-    clearTimeout(_cloudSyncTimer);
 
     _hasPendingCloudSync = false;
 
@@ -23970,7 +24312,7 @@ async function syncProgressToCloud(isImmediate = false) {
 
 
 
-    const docRef = fbDb.collection("users").doc(user.uid);
+    const docRef = fbDb.collection("users").doc(currentUser.uid);
 
     const payload = {
 
@@ -23986,9 +24328,9 @@ async function syncProgressToCloud(isImmediate = false) {
 
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
 
-      userEmail: user.email || "",
+      userEmail: currentUser.email || "",
 
-      displayName: user.displayName || "",
+      displayName: currentUser.displayName || "",
 
       userAgent: navigator.userAgent.substring(0, 100)
 
@@ -23998,33 +24340,18 @@ async function syncProgressToCloud(isImmediate = false) {
 
     await docRef.set(payload, { merge: true });
 
-    if (_cloudUploadJob !== job || !currentUser || currentUser.uid !== user.uid) return false;
-    if (!_hasPendingCloudSync) {
-      updateSyncIndicator("synced");
-      return true;
-    }
-
-    }
-    return false;
+    updateSyncIndicator("synced");
 
   } catch (err) {
 
     console.error("Cloud upload error:", err);
 
-    if (_cloudUploadJob === job && currentUser && currentUser.uid === user.uid) {
-      _hasPendingCloudSync = true;
+    _hasPendingCloudSync = true;
 
-      updateSyncIndicator("error");
-    }
-    return false;
-
-  } finally {
-    if (_cloudUploadJob === job) _cloudUploadJob = null;
+    updateSyncIndicator("error");
 
   }
 
-  })();
-  return job.promise;
 }
 
 
@@ -24137,13 +24464,18 @@ async function signInWithGoogle() {
 
   }
 
-  if (typeof firebase === "undefined" || typeof firebase.auth !== "function" || typeof firebase.firestore !== "function") {
+  try {
+    await loadFirebaseSdk();
+  } catch (sdkErr) {
+    const msg = "⚠️ تعذر تحميل مكتبة Google Sign-In. يرجى التأكد من اتصالك بالإنترنت أو فتح الرابط في متصفح Chrome أو Safari.";
+    const errBox = document.getElementById("authErrorMsg");
+    if (errBox) { errBox.textContent = msg; errBox.style.display = "block"; }
+    return;
+  }
 
-    startCloudServices();
+  if (typeof firebase === "undefined") {
 
-    const msg = "جاري تحميل تسجيل الدخول. تقدر تذاكر الآن، وجرّب تسجيل الدخول مرة تانية بعد لحظات. لو التأخير مستمر تأكد من اتصال الإنترنت.";
-
-    showToast(msg);
+    const msg = "⚠️ تعذر تحميل مكتبة Google Sign-In. يرجى التأكد من اتصالك بالإنترنت أو فتح الرابط في متصفح Chrome أو Safari.";
 
     const errBox = document.getElementById("authErrorMsg");
 
@@ -24155,7 +24487,7 @@ async function signInWithGoogle() {
 
   if (!firebase.apps || !firebase.apps.length) {
 
-    initFirebase();
+    await initFirebase();
 
   }
 
@@ -24374,9 +24706,11 @@ async function manualForceSync() {
 
     showToast("Syncing with cloud...");
 
-    if (await syncProgressToCloud(true) && await syncProgressFromCloud(currentUser)) {
-      showToast("Cloud sync complete!");
-    }
+    await syncProgressToCloud(true);
+
+    await syncProgressFromCloud(currentUser);
+
+    showToast("Cloud sync complete!");
 
   }
 
@@ -24447,356 +24781,6 @@ document.addEventListener("click", function(e) {
   }
 
 });
-
-function _secVaultDecrypt(cipherBytes) {
-
-  const _k = [69,77,76,69,95,83,69,67,85,82,69,95,86,65,85,76,84,95,50,48,50,54,95,64,104,109,51,100,95,65,109,51,114,95,78,117,116,115,104,101,108,108,95,35,75,101,121,57,57].map(c => String.fromCharCode(c)).join("");
-
-  const S = new Uint8Array(256);
-
-  for (let i = 0; i < 256; i++) S[i] = i;
-
-  let j = 0;
-
-  for (let i = 0; i < 256; i++) {
-
-    j = (j + S[i] + _k.charCodeAt(i % _k.length)) % 256;
-
-    const tmp = S[i]; S[i] = S[j]; S[j] = tmp;
-
-  }
-
-  let i = 0; j = 0;
-
-  const out = new Uint8Array(cipherBytes.length);
-
-  for (let k = 0; k < cipherBytes.length; k++) {
-
-    i = (i + 1) % 256;
-
-    j = (j + S[i]) % 256;
-
-    const tmp = S[i]; S[i] = S[j]; S[j] = tmp;
-
-    out[k] = cipherBytes[k] ^ S[(S[i] + S[j]) % 256];
-
-  }
-
-  return out;
-
-}
-
-
-
-
-
-function _pureJsGunzip(buf) {
-
-  let pos = 0;
-
-  if (buf[0] === 0x1f && buf[1] === 0x8b) {
-
-    const flg = buf[3];
-
-    pos = 10;
-
-    if (flg & 4) { const xlen = buf[pos] | (buf[pos + 1] << 8); pos += 2 + xlen; }
-
-    if (flg & 8) { while (buf[pos++] !== 0) {} }
-
-    if (flg & 16) { while (buf[pos++] !== 0) {} }
-
-    if (flg & 2) pos += 2;
-
-  }
-
-  const end = (buf[0] === 0x1f && buf[1] === 0x8b) ? buf.length - 8 : buf.length;
-
-  let bitPos = pos * 8;
-
-  const readBits = (n) => {
-
-    let val = 0;
-
-    for (let i = 0; i < n; i++) {
-
-      val |= ((buf[bitPos >> 3] >> (bitPos & 7)) & 1) << i;
-
-      bitPos++;
-
-    }
-
-    return val;
-
-  };
-
-  const buildTree = (lengths) => {
-
-    let maxBits = 0;
-
-    for (let i = 0; i < lengths.length; i++) if (lengths[i] > maxBits) maxBits = lengths[i];
-
-    const blCount = new Uint16Array(maxBits + 1);
-
-    for (let i = 0; i < lengths.length; i++) if (lengths[i]) blCount[lengths[i]]++;
-
-    const nextCode = new Uint16Array(maxBits + 1);
-
-    let code = 0;
-
-    for (let bits = 1; bits <= maxBits; bits++) {
-
-      code = (code + blCount[bits - 1]) << 1;
-
-      nextCode[bits] = code;
-
-    }
-
-    const map = {};
-
-    for (let n = 0; n < lengths.length; n++) {
-
-      const len = lengths[n];
-
-      if (len !== 0) {
-
-        map[(len << 16) | nextCode[len]] = n;
-
-        nextCode[len]++;
-
-      }
-
-    }
-
-    return { map, maxBits };
-
-  };
-
-  const decodeSym = (tree) => {
-
-    let code = 0;
-
-    for (let len = 1; len <= tree.maxBits; len++) {
-
-      code = (code << 1) | ((buf[bitPos >> 3] >> (bitPos & 7)) & 1);
-
-      bitPos++;
-
-      const sym = tree.map[(len << 16) | code];
-
-      if (sym !== undefined) return sym;
-
-    }
-
-    throw new Error("Invalid Huffman code");
-
-  };
-
-  const fixedLit = (() => {
-
-    const l = new Uint8Array(288);
-
-    for (let i = 0; i <= 143; i++) l[i] = 8;
-
-    for (let i = 144; i <= 255; i++) l[i] = 9;
-
-    for (let i = 256; i <= 279; i++) l[i] = 7;
-
-    for (let i = 280; i <= 287; i++) l[i] = 8;
-
-    return buildTree(l);
-
-  })();
-
-  const fixedDist = buildTree(new Uint8Array(32).fill(5));
-
-  const lenBase = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
-
-  const lenExtra = [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
-
-  const distBase = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
-
-  const distExtra = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
-
-  const clOrder = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
-
-
-
-  let out = new Uint8Array(buf.length * 4);
-
-  let outPos = 0;
-
-  const ensureCap = (add) => {
-
-    if (outPos + add <= out.length) return;
-
-    const next = new Uint8Array(Math.max(out.length * 2, outPos + add + 65536));
-
-    next.set(out.subarray(0, outPos));
-
-    out = next;
-
-  };
-
-  let bfinal = 0;
-
-  while (!bfinal && (bitPos >> 3) < end) {
-
-    bfinal = readBits(1);
-
-    const btype = readBits(2);
-
-    if (btype === 0) {
-
-      bitPos = (bitPos + 7) & ~7;
-
-      const p = bitPos >> 3;
-
-      const len = buf[p] | (buf[p + 1] << 8);
-
-      bitPos += 32;
-
-      ensureCap(len);
-
-      out.set(buf.subarray(p + 4, p + 4 + len), outPos);
-
-      outPos += len;
-
-      bitPos += len * 8;
-
-    } else if (btype === 1 || btype === 2) {
-
-      let litTree = fixedLit, distTree = fixedDist;
-
-      if (btype === 2) {
-
-        const hlit = readBits(5) + 257;
-
-        const hdist = readBits(5) + 1;
-
-        const hclen = readBits(4) + 4;
-
-        const clLens = new Uint8Array(19);
-
-        for (let i = 0; i < hclen; i++) clLens[clOrder[i]] = readBits(3);
-
-        const clTree = buildTree(clLens);
-
-        const lens = new Uint8Array(hlit + hdist);
-
-        let idx = 0;
-
-        while (idx < hlit + hdist) {
-
-          const sym = decodeSym(clTree);
-
-          if (sym < 16) lens[idx++] = sym;
-
-          else {
-
-            let rep = 0, val = 0;
-
-            if (sym === 16) { val = lens[idx - 1]; rep = 3 + readBits(2); }
-
-            else if (sym === 17) { val = 0; rep = 3 + readBits(3); }
-
-            else { val = 0; rep = 11 + readBits(7); }
-
-            while (rep--) lens[idx++] = val;
-
-          }
-
-        }
-
-        litTree = buildTree(lens.subarray(0, hlit));
-
-        distTree = buildTree(lens.subarray(hlit));
-
-      }
-
-      while (true) {
-
-        const sym = decodeSym(litTree);
-
-        if (sym === 256) break;
-
-        if (sym < 256) { ensureCap(1); out[outPos++] = sym; }
-
-        else {
-
-          const lIdx = sym - 257;
-
-          const length = lenBase[lIdx] + readBits(lenExtra[lIdx]);
-
-          const dIdx = decodeSym(distTree);
-
-          const dist = distBase[dIdx] + readBits(distExtra[dIdx]);
-
-          ensureCap(length);
-
-          for (let i = 0; i < length; i++) { out[outPos] = out[outPos - dist]; outPos++; }
-
-        }
-
-      }
-
-    } else {
-
-      throw new Error("Invalid DEFLATE block type");
-
-    }
-
-  }
-
-  return out.subarray(0, outPos);
-
-}
-
-
-
-async function _gunzipBytesSafe(bytes) {
-
-  if (typeof DecompressionStream !== "undefined") {
-
-    try {
-
-      const ds = new DecompressionStream("gzip");
-
-      const readerPromise = new Response(ds.readable).arrayBuffer();
-
-      const writer = ds.writable.getWriter();
-
-      const CHUNK = 65536;
-
-      for (let off = 0; off < bytes.length; off += CHUNK) {
-
-        await writer.write(bytes.subarray(off, off + CHUNK));
-
-      }
-
-      await writer.close();
-
-      const buf = await readerPromise;
-
-      return new TextDecoder("utf-8").decode(buf);
-
-    } catch (e) {
-
-      console.warn("DecompressionStream fallback triggered:", e);
-
-    }
-
-  }
-
-  const plain = _pureJsGunzip(bytes);
-
-  return new TextDecoder("utf-8").decode(plain);
-
-}
-
-
-
-
 
 // ================= UPDATE ANNOUNCEMENT MODAL LOGIC =================
 
@@ -24932,70 +24916,201 @@ function resetTopicHighlights(topicId) {
 
 
 
-async function bootCompressedPortal() {
+const DATA_BOOT_STAGE_LABELS = {
+  fetch: "Fetching encrypted library…",
+  decrypt: "Decrypting vault…",
+  inflate: "Expanding compressed data…",
+  parse: "Parsing library…",
+  cache: "Loading cached library…"
+};
 
-  try { loadState(); } catch(e) { console.warn("loadState error:", e); }
+const VAULT_IDB_NAME = "emle_vault_cache";
+const VAULT_IDB_STORE = "vault";
+const VAULT_IDB_KEY = "current";
 
-  try { renderPomo(); } catch(e) { console.warn("renderPomo error:", e); }
-
-  // 1. Decrypt and initialize DATA first to guarantee data readiness
-  try {
-
-    const b64 = DATA_SEC_ENC;
-
-    const binStr = atob(b64);
-
-    const rawBytes = new Uint8Array(binStr.length);
-
-    for (let i = 0; i < binStr.length; i++) rawBytes[i] = binStr.charCodeAt(i);
-
-    const bytes = _secVaultDecrypt(rawBytes);
-
-    const text = await _gunzipBytesSafe(bytes);
-
-    DATA = JSON.parse(text);
-
-  } catch (err) {
-
-    console.error("Portal data boot error:", err);
-
-  }
-
-  try { initBrowserHistoryGuard(); } catch(e) {}
-
-  try {
-
-    navigateTo("home", null, { isInitialBoot: true });
-
-  } catch(e) {
-
-    console.error("Initial navigateTo error:", e);
-
-    try { renderHome(); } catch(err) {}
-
-    try { renderSidebarTree(); } catch(err) {}
-
-  }
-
-  // 2. Initialize Firebase after DATA is 100% loaded and home is active
-  // Start in a separate task so the local home page can render first.
-  setTimeout(startCloudServices, 0);
-
-  try { checkUpdateAnnouncement(); } catch(e) {}
-
+function setDataBootUI(mode, title, status) {
+  const loader = document.getElementById("dataBootLoader");
+  const titleEl = document.getElementById("dataBootTitle");
+  const statusEl = document.getElementById("dataBootStatus");
+  if (!loader) return;
+  loader.classList.toggle("is-error", mode === "error");
+  loader.classList.remove("hidden", "is-fading");
+  loader.setAttribute("aria-busy", mode === "loading" ? "true" : "false");
+  if (titleEl && title) titleEl.textContent = title;
+  if (statusEl && status !== undefined) statusEl.textContent = status;
 }
 
+function hideDataBootLoader() {
+  const loader = document.getElementById("dataBootLoader");
+  if (!loader) return;
+  loader.classList.add("is-fading");
+  loader.setAttribute("aria-busy", "false");
+  setTimeout(() => {
+    loader.classList.add("hidden");
+    loader.classList.remove("is-fading", "is-error");
+  }, 250);
+}
+
+function openVaultIdb() {
+  return new Promise((resolve) => {
+    if (typeof indexedDB === "undefined") {
+      resolve(null);
+      return;
+    }
+    const req = indexedDB.open(VAULT_IDB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(VAULT_IDB_STORE)) db.createObjectStore(VAULT_IDB_STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => resolve(null);
+  });
+}
+
+function idbGetVault(db) {
+  return new Promise((resolve) => {
+    if (!db) { resolve(null); return; }
+    try {
+      const tx = db.transaction(VAULT_IDB_STORE, "readonly");
+      const req = tx.objectStore(VAULT_IDB_STORE).get(VAULT_IDB_KEY);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => resolve(null);
+    } catch (e) {
+      resolve(null);
+    }
+  });
+}
+
+function idbPutVault(db, record) {
+  return new Promise((resolve) => {
+    if (!db) { resolve(false); return; }
+    try {
+      const tx = db.transaction(VAULT_IDB_STORE, "readwrite");
+      tx.objectStore(VAULT_IDB_STORE).put(record, VAULT_IDB_KEY);
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => resolve(false);
+    } catch (e) {
+      resolve(false);
+    }
+  });
+}
+
+async function loadDataViaWorker() {
+  const db = await openVaultIdb();
+  const cached = await idbGetVault(db);
+  const cachedFingerprint = cached && cached.fingerprint ? cached.fingerprint : null;
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    let worker;
+    try {
+      worker = new Worker("./data-worker.js");
+    } catch (err) {
+      reject(err);
+      return;
+    }
+
+    const finish = (fn, value) => {
+      if (settled) return;
+      settled = true;
+      try { worker.terminate(); } catch (e) {}
+      fn(value);
+    };
+
+    worker.onmessage = (e) => {
+      const msg = e.data || {};
+      if (msg.type === "progress") {
+        const label = DATA_BOOT_STAGE_LABELS[msg.stage] || "Loading…";
+        setDataBootUI("loading", "Loading EMLE library…", label);
+        return;
+      }
+      if (msg.type === "cache-hit") {
+        if (cached && cached.data) {
+          setDataBootUI("loading", "Loading EMLE library…", DATA_BOOT_STAGE_LABELS.cache);
+          finish(resolve, { data: cached.data, fingerprint: cached.fingerprint, fromCache: true });
+        } else {
+          finish(reject, new Error("Cache hit but no cached data"));
+        }
+        return;
+      }
+      if (msg.type === "ready") {
+        const payload = { data: msg.data, fingerprint: msg.fingerprint, fromCache: false };
+        idbPutVault(db, { fingerprint: msg.fingerprint, data: msg.data }).finally(() => {
+          finish(resolve, payload);
+        });
+        return;
+      }
+      if (msg.type === "error") {
+        finish(reject, new Error(msg.message || "Data load failed"));
+      }
+    };
+
+    worker.onerror = (err) => {
+      finish(reject, new Error((err && err.message) || "Worker failed to load"));
+    };
+
+    worker.postMessage({ type: "load", cachedFingerprint: cachedFingerprint });
+  });
+}
+
+async function bootCompressedPortal() {
+  try { loadState(); } catch (e) { console.warn("loadState error:", e); }
+  try { collapseChaptersForMobile(); } catch (e) {}
+  try { renderPomo(); } catch (e) { console.warn("renderPomo error:", e); }
+
+  setDataBootUI("loading", "Loading EMLE library…", "Starting background decrypt…");
+
+  try {
+    const result = await loadDataViaWorker();
+    DATA = result.data;
+    buildDataIndexes(DATA);
+    hideDataBootLoader();
+  } catch (err) {
+    console.error("Portal data boot error:", err);
+    setDataBootUI(
+      "error",
+      "Could not load library",
+      (err && err.message) || "Data load failed"
+    );
+    return;
+  }
+
+  try { initBrowserHistoryGuard(); } catch (e) {}
+
+  try {
+    navigateTo("home", null, { isInitialBoot: true });
+  } catch (e) {
+    console.error("Initial navigateTo error:", e);
+    try { renderHome(); } catch (err) {}
+    try { renderSidebarTree(true); } catch (err) {}
+  }
+
+  try { await initFirebase(); } catch (e) { console.warn("initFirebase error:", e); }
+  try { checkUpdateAnnouncement(); } catch (e) {}
+}
+
+function retryDataBoot() {
+  bootCompressedPortal();
+}
+
+window.addEventListener("resize", syncTopbarHeight);
 
 
-let _resizeDebounceTimer = null;
-window.addEventListener("resize", () => {
-  clearTimeout(_resizeDebounceTimer);
-  _resizeDebounceTimer = setTimeout(syncTopbarHeight, 100);
-}, { passive: true });
 
 function _startPortalBoot() {
+
   syncTopbarHeight();
+
+  const mainTopbar = document.getElementById("mainTopbar") || document.querySelector(".topbar");
+
+  if (mainTopbar && typeof ResizeObserver !== "undefined") {
+
+    new ResizeObserver(syncTopbarHeight).observe(mainTopbar);
+
+  }
+
   bootCompressedPortal();
+
 }
 
 
@@ -25484,7 +25599,7 @@ function openReportQuestionModal(qNum) {
 
   _currentReportQNum = qNum;
 
-  const q = DATA.questions.find(x => x.number === qNum);
+  const q = findQuestionByNumber(qNum);
 
   const modal = document.getElementById("reportQuestionModal");
 
@@ -25536,7 +25651,7 @@ async function submitQuestionReport() {
 
   const qnum = _currentReportQNum;
 
-  const q = DATA.questions.find(x => x.number === qnum);
+  const q = findQuestionByNumber(qnum);
 
   const catEl = document.getElementById("reportCategorySelect");
 
@@ -26968,10 +27083,6 @@ function applyReaderTypography() {
     if (incBtn) {
       incBtn.disabled = (_currentFontScaleIndex === FONT_SCALE_LEVELS.length - 1);
       incBtn.style.opacity = (_currentFontScaleIndex === FONT_SCALE_LEVELS.length - 1) ? "0.35" : "1";
-    }
-
-    if (typeof syncTopbarHeight === "function") {
-      syncTopbarHeight();
     }
   } catch (e) {
     console.error("applyReaderTypography error:", e);
