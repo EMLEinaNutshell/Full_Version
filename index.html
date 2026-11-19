@@ -11224,7 +11224,309 @@
     font-weight: 800 !important;
   }
 
+/* ================= PREDICTIONS & EXAM ANALYSIS STYLES ================= */
+.dashboard-predictions-banner {
+  background: linear-gradient(135deg, #042f2e 0%, #064e3b 50%, #0f766e 100%);
+  border: 1px solid rgba(20, 184, 166, 0.45);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-bottom: 22px;
+  color: #fff;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.25), 0 8px 10px -6px rgba(13, 148, 136, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.dashboard-predictions-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -5px rgba(13, 148, 136, 0.35), 0 10px 10px -5px rgba(13, 148, 136, 0.2);
+}
+.dpb-glow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.35) 0%, transparent 70%);
+  pointer-events: none;
+}
+.dpb-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.dpb-badge {
+  background: #2dd4bf;
+  color: #042f2e;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+.dpb-tag {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ccfbf1;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.dpb-title {
+  font-size: 19px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+  line-height: 1.4;
+}
+.dpb-sub {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #e6fffa;
+  margin: 0 0 14px 0;
+  max-width: 900px;
+}
+.dpb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.dpb-btn {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 13.5px !important;
+  padding: 8px 18px !important;
+  border-radius: 8px !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4) !important;
+  cursor: pointer;
+}
+.dpb-stats-quick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #99f6e4;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
 
+/* Predictions Hub Action Cards */
+.pred-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin: 24px 0;
+}
+.pred-action-card {
+  background: var(--card-bg, #ffffff);
+  border: 2px solid var(--border, #e2e8f0);
+  border-radius: 14px;
+  padding: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.pred-action-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.1);
+}
+.pred-card-top100 {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, rgba(254, 243, 199, 0.35) 0%, var(--card-bg, #ffffff) 100%);
+}
+.pred-card-top500 {
+  border-color: #0d9488;
+  background: linear-gradient(180deg, rgba(204, 251, 241, 0.35) 0%, var(--card-bg, #ffffff) 100%);
+}
+.pred-card-all {
+  border-color: #3b82f6;
+  background: linear-gradient(180deg, rgba(219, 234, 254, 0.35) 0%, var(--card-bg, #ffffff) 100%);
+}
+.pac-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  width: fit-content;
+  margin-bottom: 12px;
+}
+.pac-badge-gold { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.pac-badge-teal { background: #ccfbf1; color: #115e59; border: 1px solid #99f6e4; }
+.pac-badge-blue { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+
+.pac-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+  color: var(--text, #1e293b);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pac-desc {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-muted, #64748b);
+  margin: 0 0 18px 0;
+}
+.pac-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  font-size: 13px;
+}
+.pac-features li {
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text, #334155);
+}
+.pac-btn {
+  width: 100%;
+  padding: 12px 18px;
+  font-size: 14.5px;
+  font-weight: 800;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+.pac-btn-gold {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+}
+.pac-btn-gold:hover { filter: brightness(1.08); }
+.pac-btn-teal {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+}
+.pac-btn-teal:hover { filter: brightness(1.08); }
+.pac-btn-blue {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+.pac-btn-blue:hover { filter: brightness(1.08); }
+
+/* Predictions Quick Stats Row */
+.pred-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+.pred-stat-card {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.pred-stat-card .ps-num {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.pred-stat-card .ps-label {
+  font-size: 12.5px;
+  color: var(--text-muted, #64748b);
+  font-weight: 600;
+}
+
+/* Quiz Session Chapter Filter Bar */
+.quiz-chap-filter-bar {
+  display: none;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  padding: 9px 14px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  scrollbar-width: thin;
+}
+.qcf-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: max-content;
+  width: 100%;
+}
+.qcf-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text, #334155);
+  flex-shrink: 0;
+}
+.qcf-pills-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+.qcf-pill {
+  border: 1px solid var(--border, #cbd5e1);
+  background: var(--card-bg, #f8fafc);
+  color: var(--text, #334155);
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+.qcf-pill:hover {
+  background: var(--border, #e2e8f0);
+}
+.qcf-pill.active {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  border-color: #0d9488 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);
+}
+.qcf-pill .qcf-count {
+  font-size: 11px;
+  opacity: 0.85;
+}
+.q-dot.dot-filtered-hidden {
+  display: none !important;
+}
+.qc-pred-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
 
 </style>
 
@@ -11600,6 +11902,11 @@ function syncAdminCopyAccess() {
     <span>🎓 Exams</span>
 
   </div>
+      <div class="sb-home-link" id="sbPredictionsLink" onclick="navigateTo('predictions')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#0d9488;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+        <span>🎯 توقعات 2025-2026</span>
+        <span style="margin-left:auto; font-size:10px; background:#0d9488; color:#fff; padding:1px 6px; border-radius:10px; font-weight:700;">جديد</span>
+      </div>
 
   <div class="sb-home-link" id="sbAnalyticsLink" onclick="navigateTo('analytics')">
 
@@ -11711,7 +12018,35 @@ function syncAdminCopyAccess() {
 
       <!-- 📢 TOP DASHBOARD UPDATE BANNER (13 نوفمبر 2026) -->
 
-            <!-- 📚 PINNED VIP COMPLETE BOOK BANNER -->
+                  <!-- 🎯 PREDICTIONS & REPETITION STATS HERO BANNER -->
+      <div class="dashboard-predictions-banner" id="dashPredBanner" dir="rtl" onclick="navigateTo('predictions')">
+        <div class="dpb-glow"></div>
+        <div class="dpb-content">
+          <div class="dpb-header">
+            <span class="dpb-badge">🎯 جديد وحصري • الذكاء الإحصائي</span>
+            <span class="dpb-tag">امتحانات 2025 &amp; 2026 (فعلي / تجريبي / محاكاة)</span>
+          </div>
+          <h3 class="dpb-title">تحليل وتوقعات امتحانات 2025 / 2026 والأسئلة الأكثر احتمالية للتكرار 🚀</h3>
+          <p class="dpb-sub">
+            دراسة إحصائية مبنية على نمط تكرار امتحانات 2025 و 2026 (فعلي / تجريبي / محاكاة) لتحديد الأسئلة الأكثر ترجيحاً للامتحان القادم: 
+            <strong>الـ 100 الأكثر احتمالية</strong> • <strong>بنك الـ 500 (نطاق الأمان)</strong> • <strong>البنك الكامل 1,054 سؤال</strong>.
+          </p>
+          <div class="dpb-footer">
+            <button class="btn-teal dpb-btn" onclick="event.stopPropagation(); navigateTo('predictions');">
+              🚀 استعراض التوقعات وبدء الحل الآن &larr;
+            </button>
+            <span class="dpb-stats-quick">
+              <span>🔥 100 سؤال ذات الأولوية القصوى</span>
+              <span>•</span>
+              <span>🛡️ 500 سؤال نطاق الأمان</span>
+              <span>•</span>
+              <span>🌐 البنك الكامل (1,054 سؤال)</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📚 PINNED VIP COMPLETE BOOK BANNER -->
       <div class="dashboard-book-banner" id="dashBookBanner" dir="rtl">
         <div class="dbb-header">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -11884,6 +12219,20 @@ function syncAdminCopyAccess() {
 
           </div>
 
+        </div>
+
+        <div class="nav-portal-card nav-portal-card-pred" onclick="navigateTo('predictions')" style="border-top: 3px solid #0d9488;">
+          <div>
+            <span class="npc-tag" style="background:#0d9488; color:#fff;">High Yield Core</span>
+            <h2 class="npc-title">🎯 Predictions</h2>
+            <p class="npc-desc" dir="rtl" style="text-align: right; line-height: 1.6; font-size: 13.5px;">
+              توقعات امتحانات 2025 و 2026 (فعلي / تجريبي / محاكاة) مقسمة لـ <strong>3 باقات</strong>: الـ 100 الأكثر احتمالية، الـ 500 (نطاق الأمان)، والـ 1054 سؤال كاملة.
+            </p>
+          </div>
+          <div class="npc-footer" style="color:#0d9488; font-weight:700;">
+            <span>Open Predictions</span>
+            <span>&rarr;</span>
+          </div>
         </div>
 
       </div>
@@ -12510,6 +12859,7 @@ function syncAdminCopyAccess() {
 
             
 
+            <div id="quizChapterFilterBar" class="quiz-chap-filter-bar"></div>
       <div class="q-dots-bar">
 
         <div class="q-dots-strip" id="quizDotsStrip"></div>
@@ -12536,6 +12886,23 @@ function syncAdminCopyAccess() {
 
 
 
+        <!-- PAGE: EXAM PREDICTIONS & REPETITION ANALYSIS -->
+    <section class="view-page" id="page-predictions">
+      <div class="page-title-block" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h1 style="display:flex; align-items:center; gap:8px;">🎯 تحليل وتوقعات امتحانات 2025 / 2026</h1>
+          <p dir="rtl" style="text-align:right; margin-top:4px; font-size:14px; line-height:1.6; color:var(--text-muted);">
+            دراسة إحصائية ذكية قائمة على وتيرة تكرار أسئلة امتحانات 2025 و 2026 (فعلي / تجريبي / محاكاة)، مصنفة لـ <strong>3 باقات متدرجة</strong> مع إمكانية البدء من الأول أو الإبقاء على الإجابات السابقة.
+          </p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn-outline" onclick="navigateTo('quizzes')">📝 All QBank</button>
+          <button class="btn-outline" onclick="navigateTo('home')">&larr; Dashboard</button>
+        </div>
+      </div>
+
+      <div id="predictionsPageContainer"></div>
+    </section>
     <!-- PAGE 6: FULL VISUAL EXAM ANALYTICS PAGE -->
 
     <section class="view-page" id="page-analytics">
@@ -15731,9 +16098,10 @@ function updateSidebarNavHighlights() {
 
   if (sbAn) sbAn.classList.toggle("active-nav", state.currentView === "analytics");
 
-  const sbSp = document.getElementById("sbStudyPlanLink");
-
+    const sbSp = document.getElementById("sbStudyPlanLink");
   if (sbSp) sbSp.classList.toggle("active-nav", state.currentView === "studyplan");
+  const sbPred = document.getElementById("sbPredictionsLink");
+  if (sbPred) sbPred.classList.toggle("active-nav", state.currentView === "predictions");
 
   const container = document.getElementById("sidebarTreeContainer");
 
@@ -16451,7 +16819,8 @@ function navigateTo(view, param, navOpts) {
     else if (view === "quiz") renderQuizPage(true);
     else if (view === "exams") renderExamsPage();
     else if (view === "analytics") renderAnalyticsPage();
-    else if (view === "studyplan") renderStudyPlanPage();
+        else if (view === "studyplan") renderStudyPlanPage();
+    else if (view === "predictions") renderPredictionsPage();
   } catch (err) {
     console.error("View rendering error for " + view + ":", err);
   }
@@ -16481,6 +16850,14 @@ function renderBreadcrumbs() {
 
 
 
+    if (v === "predictions") {
+    nav.innerHTML = `
+      <a class="crumb-link" onclick="navigateTo('home')">Dashboard</a>
+      <span class="crumb-sep">/</span>
+      <span class="crumb-current">توقعات 2025 / 2026</span>
+    `;
+    return;
+  }
   if (v === "home") {
 
     nav.innerHTML = `<span class="crumb-current">Dashboard</span>`;
@@ -17109,6 +17486,7 @@ function openSearchedQuestion(qnum) {
   const qs = computeQuestionsForFilter(state.quizFilter);
 
   state.activeQuizQs = qs.slice();
+  state.quizChapterFilter = null;
 
   const idx = qs.findIndex(x => x.number === qnum);
 
@@ -21495,6 +21873,400 @@ function toggleTopicRead(topicId) {
 
 // ================= PAGE 5: QUIZ SESSION + SINGLE-LINE DOTS & TAGS =================
 
+// =============================================================================
+// PREDICTIONS & STATISTICAL EXAM ANALYSIS ENGINE (2025 / 2026)
+// =============================================================================
+
+let _scoredPredictionsCache = null;
+
+function computePredictionsAnalysis() {
+  if (_scoredPredictionsCache) return _scoredPredictionsCache;
+  if (!DATA || !DATA.questions) return { all: [], top100: [], top500: [], stats: {} };
+
+  // 1. Topic density for 2025/2026
+  const topicDensity = {};
+  DATA.questions.forEach(q => {
+    let c = 0;
+    if (Array.isArray(q.exam_tags)) {
+      q.exam_tags.forEach(t => {
+        if (/2025|2026/.test(t)) c++;
+      });
+    }
+    topicDensity[q.topic_id] = (topicDensity[q.topic_id] || 0) + c;
+  });
+
+  // 2. Score questions
+  const scored = [];
+  let count2026Only = 0;
+  let count2025Only = 0;
+  let countBoth = 0;
+
+  DATA.questions.forEach(q => {
+    let f2026 = 0, f2025 = 0, fPre = 0;
+    if (Array.isArray(q.exam_tags)) {
+      q.exam_tags.forEach(t => {
+        if (/2026/.test(t)) f2026++;
+        else if (/2025/.test(t)) f2025++;
+        else fPre++;
+      });
+    }
+    if (f2026 === 0 && f2025 === 0) return;
+
+    const fTotal = f2026 + f2025 + fPre;
+    const appearedBoth = (f2026 > 0 && f2025 > 0);
+    if (appearedBoth) countBoth++;
+    else if (f2026 > 0) count2026Only++;
+    else count2025Only++;
+
+    const tDens = topicDensity[q.topic_id] || 0;
+    const bothBonus = appearedBoth ? 6.0 : 0.0;
+    const rawScore = (f2026 * 4.5) + (f2025 * 3.0) + bothBonus + (fTotal * 0.7) + (tDens * 0.05);
+    const prob = Math.min(98, Math.round(42 + (rawScore * 2.2)));
+
+    q._predScore = Math.round(rawScore * 10) / 10;
+    q._predProb = prob;
+    q._f2026 = f2026;
+    q._f2025 = f2025;
+    q._fTotal = fTotal;
+    q._appearedBoth = appearedBoth;
+
+    scored.push(q);
+  });
+
+  // Sort descending by rawScore, secondary by f2026, tertiary by fTotal
+  scored.sort((a, b) => {
+    if (b._predScore !== a._predScore) return b._predScore - a._predScore;
+    if (b._f2026 !== a._f2026) return b._f2026 - a._f2026;
+    return b._fTotal - a._fTotal;
+  });
+
+  // Assign ranks
+  scored.forEach((q, idx) => {
+    q._predRank = idx + 1;
+  });
+
+  const top100 = scored.slice(0, 100);
+  const top500 = scored.slice(0, 500);
+
+  _scoredPredictionsCache = {
+    all: scored,
+    top100: top100,
+    top500: top500,
+    stats: {
+      total: scored.length,
+      both: countBoth,
+      only2026: count2026Only,
+      only2025: count2025Only
+    }
+  };
+
+  return _scoredPredictionsCache;
+}
+
+function renderPredictionsPage() {
+  const container = document.getElementById("predictionsPageContainer");
+  if (!container) return;
+
+  const analysis = computePredictionsAnalysis();
+  const stats = analysis.stats;
+
+  // Chapter breakdown
+  const chapStats = {};
+  if (DATA && DATA.chapters) {
+    DATA.chapters.forEach(c => {
+      chapStats[c.id] = { id: c.id, title: getChapterTitle(c.id), top100: 0, top500: 0, total: 0 };
+    });
+  }
+
+  analysis.top100.forEach(q => {
+    const cid = q.chapter_id || "other";
+    if (!chapStats[cid]) chapStats[cid] = { id: cid, title: getChapterTitle(cid), top100: 0, top500: 0, total: 0 };
+    chapStats[cid].top100++;
+  });
+
+  analysis.top500.forEach(q => {
+    const cid = q.chapter_id || "other";
+    if (!chapStats[cid]) chapStats[cid] = { id: cid, title: getChapterTitle(cid), top100: 0, top500: 0, total: 0 };
+    chapStats[cid].top500++;
+  });
+
+  analysis.all.forEach(q => {
+    const cid = q.chapter_id || "other";
+    if (!chapStats[cid]) chapStats[cid] = { id: cid, title: getChapterTitle(cid), top100: 0, top500: 0, total: 0 };
+    chapStats[cid].total++;
+  });
+
+  const sortedChaps = Object.values(chapStats).filter(c => c.total > 0).sort((a, b) => b.top100 - a.top100 || b.top500 - a.top500);
+
+  let html = `
+    <!-- Top summary metrics -->
+    <div class="pred-stats-grid" dir="rtl">
+      <div class="pred-stat-card" style="border-top:3px solid #d97706;">
+        <div class="ps-num" style="color:#d97706;">100</div>
+        <div class="ps-label">🏆 الأكثر احتمالية (النواة الذهبية)</div>
+      </div>
+      <div class="pred-stat-card" style="border-top:3px solid #0d9488;">
+        <div class="ps-num" style="color:#0d9488;">500</div>
+        <div class="ps-label">🛡️ بنك نطاق الأمان الشامل</div>
+      </div>
+      <div class="pred-stat-card" style="border-top:3px solid #3b82f6;">
+        <div class="ps-num" style="color:#3b82f6;">1,054</div>
+        <div class="ps-label">🌐 البنك الكامل (2025 و 2026)</div>
+      </div>
+    </div>
+
+    <!-- Methodology Box -->
+    <div class="article-card" dir="rtl" style="margin-bottom:24px; border:1px solid #ccfbf1; background:#f0fdfa;">
+      <h3 style="color:#0f766e; margin-top:0; font-size:16px;">💡 كيف تم بناء التحليل الإحصائي للتوقعات؟</h3>
+      <p style="font-size:13.5px; line-height:1.7; color:#134e4a; margin:0 0 10px 0;">
+        تم حصر وتحليل جميع أسئلة امتحانات <strong>EMLE لعامي 2025 و 2026 (فعلي / تجريبي / محاكاة)</strong>. 
+        قامت الخوارزمية بحساب وزن مركب لكل سؤال بناءً على:
+        <strong>(1) حداثة الظهور</strong> (أولوية قصوى لأسئلة 2026 ثم 2025) • 
+        <strong>(2) التكرار المزدوج</strong> (بونص إضافي للأسئلة التي تكررت في العامين معاً) • 
+        <strong>(3) عدد مرات التكرار الكلي</strong> في تاريخ البنك • 
+        <strong>(4) كثافة الموضوع سريرياً</strong>.
+      </p>
+      <div style="font-size:12.5px; color:#0f766e; font-weight:700;">
+        📌 تم ترتيب الأسئلة تنازلياً حسب قوة الاحتمالية، وتوفير خيار البدء من الأول أو الإبقاء على إجاباتك السابقة، مع إمكانية فرز الشباتر داخل سيشن الحل.
+      </div>
+    </div>
+
+    <!-- The 3 Core Action Cards -->
+    <div class="pred-cards-grid" dir="rtl">
+      <!-- Tier 1: Top 100 -->
+      <div class="pred-action-card pred-card-top100">
+        <div>
+          <span class="pac-badge pac-badge-gold">🔥 أولوية حاسمة • احتمالية 90% - 98%</span>
+          <h2 class="pac-title">🏆 الـ 100 الأكثر احتمالية</h2>
+          <p class="pac-desc">
+            النواة الذهبية الأكثر تكراراً وأهمية في الامتحانات الأخيرة. تم اختيارها بأعلى درجات الترجيح الإحصائي والتكرار المزدوج. لا يمكن دخول الامتحان القادم دون حلها وإتقانها بالكامل.
+          </p>
+          <ul class="pac-features">
+            <li>✅ تضم أعلى 100 سؤال ترجيحاً للامتحان القادم</li>
+            <li>✅ تركيز مكثف على أسئلة الدورة المزدوجة (2025 + 2026)</li>
+            <li>✅ دعم كامل لنظام Tutor Mode والملاحظات الفورية</li>
+            <li>✅ فلتر الشباتر متاح داخل السيشن لتنظيم الحل</li>
+          </ul>
+        </div>
+        <div>
+          <button class="pac-btn pac-btn-gold" onclick="startQuiz('pred_top100')">
+            <span>🚀 ابدأ حل الـ 100 سؤال الآن</span>
+            <span>&larr;</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tier 2: Top 500 -->
+      <div class="pred-action-card pred-card-top500">
+        <div>
+          <span class="pac-badge pac-badge-teal">🛡️ نطاق الأمان • تغطية > 85%</span>
+          <h2 class="pac-title">🛡️ بنك الـ 500 (نطاق الأمان)</h2>
+          <p class="pac-desc">
+            البنك الموصى به لضمان أعلى درجات الأمان في الامتحان. يشمل الـ 100 الأكثر احتمالية مضافاً إليها 400 سؤال تالية ذات ثقل وتكرار سريري مرتفع في 2025 و 2026.
+          </p>
+          <ul class="pac-features">
+            <li>✅ يغطي النطاق الآمن لجميع سيناريوهات الامتحان المتوقعة</li>
+            <li>✅ توازن مثالي بين الكفاءة والوقت المتبقي للمراجعة</li>
+            <li>✅ خيارات تصفير الإجابات أو الإبقاء على المحاولات</li>
+            <li>✅ إمكانية حل الشباتر منفردة أو مجمعة بنقرة واحدة</li>
+          </ul>
+        </div>
+        <div>
+          <button class="pac-btn pac-btn-teal" onclick="startQuiz('pred_top500')">
+            <span>🚀 ابدأ حل بنك الـ 500 سؤال</span>
+            <span>&larr;</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tier 3: All 1,054 -->
+      <div class="pred-action-card pred-card-all">
+        <div>
+          <span class="pac-badge pac-badge-blue">🌐 البنك الشامل • 1,054 سؤال</span>
+          <h2 class="pac-title">🌐 بنك امتحانات 2025/2026 الكامل</h2>
+          <p class="pac-desc">
+            البنك الأرشيفي الشامل لكل سؤال ورد في امتحانات EMLE لعامي 2025 و 2026 (فعلي / تجريبي / محاكاة) بدون استثناء، مرتبة إحصائياً من الأكثر احتمالية إلى الأقل.
+          </p>
+          <ul class="pac-features">
+            <li>✅ جميع الأسئلة المرصودة خلال العامين الأخيرين (1,054 سؤال)</li>
+            <li>✅ تغطية شاملة 100% لكافة الأسئلة الحديثة</li>
+            <li>✅ ربط كامل مع الـ VIP Notes وتفسيرات د. أحمد عامر</li>
+            <li>✅ تدريب شامل على كافة نماذج الامتحان (فعلي / تجريبي / محاكاة)</li>
+          </ul>
+        </div>
+        <div>
+          <button class="pac-btn pac-btn-blue" onclick="startQuiz('pred_all1054')">
+            <span>🚀 ابدأ حل البنك الكامل (1,054)</span>
+            <span>&larr;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter Distribution & Notes Launcher -->
+    <div class="article-card" dir="rtl" style="margin-top:28px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <div>
+          <h3 style="margin:0; font-size:17px; color:var(--text);">📁 توزيع الأسئلة المتوقعة والملاحظات (VIP Notes) حسب الشابتر</h3>
+          <p style="margin:4px 0 0 0; font-size:13px; color:var(--text-muted);">يمكنك مراجعة الملاحظات السريرية لأي شابتر أو حل الأسئلة المتوقعة منه مباشرة:</p>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="data-table" style="width:100%; text-align:right; font-size:13px;">
+          <thead>
+            <tr>
+              <th style="text-align:right;">الشابتر</th>
+              <th style="text-align:center;">في الـ 100</th>
+              <th style="text-align:center;">في الـ 500</th>
+              <th style="text-align:center;">في الـ 1054</th>
+              <th style="text-align:center;">إجراءات سريعة</th>
+            </tr>
+          </thead>
+          <tbody>
+  `;
+
+  sortedChaps.forEach(ch => {
+    html += `
+      <tr>
+        <td style="font-weight:700;">${ch.title}</td>
+        <td style="text-align:center; font-weight:800; color:#d97706;">${ch.top100 > 0 ? ch.top100 : '-'}</td>
+        <td style="text-align:center; font-weight:700; color:#0d9488;">${ch.top500}</td>
+        <td style="text-align:center; font-weight:700; color:#2563eb;">${ch.total}</td>
+        <td style="text-align:center;">
+          <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn-outline" style="font-size:11.5px; padding:3px 8px;" onclick="startQuiz('pred_chapter_${ch.id}')" title="بدء سيشن حل أسئلة 2025/2026 لشابتر ${ch.title}">
+              📝 حل (${ch.total})
+            </button>
+            <button class="btn-outline" style="font-size:11.5px; padding:3px 8px; color:var(--teal); border-color:var(--teal);" onclick="navigateTo('chapter', '${ch.id}')" title="تصفح ملاحظات شابتر ${ch.title}">
+              📖 VIP Notes
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+// Chapter filter in Quiz Session
+function renderQuizChapterFilterBar(qs) {
+  const bar = document.getElementById("quizChapterFilterBar");
+  if (!bar) return;
+
+  if (!qs || qs.length === 0) {
+    bar.innerHTML = "";
+    bar.style.display = "none";
+    return;
+  }
+
+  const chapCounts = {};
+  qs.forEach(q => {
+    const cid = q.chapter_id || "other";
+    chapCounts[cid] = (chapCounts[cid] || 0) + 1;
+  });
+
+  const uniqueChaps = Object.keys(chapCounts);
+  if (uniqueChaps.length <= 1) {
+    bar.innerHTML = "";
+    bar.style.display = "none";
+    return;
+  }
+
+  bar.style.display = "flex";
+
+  const selectedChaps = state.quizChapterFilter || [];
+  const isAll = selectedChaps.length === 0;
+
+  const sortedChaps = uniqueChaps.sort((a, b) => chapCounts[b] - chapCounts[a]);
+
+  let html = `
+    <div class="qcf-inner" dir="rtl">
+      <div class="qcf-label">
+        <span class="qcf-icon">📁</span>
+        <span>تصفية الشباتر:</span>
+      </div>
+      <div class="qcf-pills-list">
+        <button class="qcf-pill ${isAll ? 'active' : ''}" onclick="setQuizChapterFilter(null)">
+          🌐 الكل <span class="qcf-count">(${qs.length})</span>
+        </button>
+  `;
+
+  sortedChaps.forEach(cid => {
+    const active = selectedChaps.includes(cid);
+    const title = getChapterTitle(cid);
+    const count = chapCounts[cid];
+    html += `
+      <button class="qcf-pill ${active ? 'active' : ''}" onclick="toggleQuizChapterFilter('${cid}')" title="${title} (${count} أسئلة)">
+        ${title} <span class="qcf-count">(${count})</span>
+      </button>
+    `;
+  });
+
+  html += `
+      </div>
+    </div>
+  `;
+
+  bar.innerHTML = html;
+}
+
+function setQuizChapterFilter(cid) {
+  if (!cid) {
+    state.quizChapterFilter = null;
+  } else {
+    state.quizChapterFilter = [cid];
+  }
+  applyQuizChapterFilterAndAdjustIndex();
+}
+
+function toggleQuizChapterFilter(cid) {
+  if (!state.quizChapterFilter || state.quizChapterFilter.length === 0) {
+    state.quizChapterFilter = [cid];
+  } else {
+    const idx = state.quizChapterFilter.indexOf(cid);
+    if (idx >= 0) {
+      state.quizChapterFilter.splice(idx, 1);
+      if (state.quizChapterFilter.length === 0) {
+        state.quizChapterFilter = null;
+      }
+    } else {
+      state.quizChapterFilter.push(cid);
+    }
+  }
+  applyQuizChapterFilterAndAdjustIndex();
+}
+
+function applyQuizChapterFilterAndAdjustIndex() {
+  const qs = getQuestionsForFilter(state.quizFilter);
+  if (!qs || qs.length === 0) return;
+
+  const selectedChaps = state.quizChapterFilter;
+
+  if (selectedChaps && selectedChaps.length > 0) {
+    const curQ = qs[state.quizIndex];
+    if (!curQ || !selectedChaps.includes(curQ.chapter_id)) {
+      const firstMatchIdx = qs.findIndex(q => selectedChaps.includes(q.chapter_id));
+      if (firstMatchIdx >= 0) {
+        state.quizIndex = firstMatchIdx;
+      }
+    }
+  }
+
+  const dotsContainer = document.getElementById("quizDotsStrip");
+  if (dotsContainer) delete dotsContainer._lastSig;
+
+  renderQuizPage(false);
+}
+
 function computeQuestionsForFilter(filter) {
 
   if (!filter) return DATA.questions.slice();
@@ -21569,6 +22341,27 @@ function computeQuestionsForFilter(filter) {
 
   }
 
+    if (filter === "pred_top100") {
+    const analysis = computePredictionsAnalysis();
+    return analysis.top100.slice();
+  }
+
+  if (filter === "pred_top500") {
+    const analysis = computePredictionsAnalysis();
+    return analysis.top500.slice();
+  }
+
+  if (filter === "pred_all1054" || filter === "pred_all") {
+    const analysis = computePredictionsAnalysis();
+    return analysis.all.slice();
+  }
+
+  if (filter && filter.startsWith("pred_chapter_")) {
+    const cid = filter.replace("pred_chapter_", "");
+    const analysis = computePredictionsAnalysis();
+    return analysis.all.filter(q => q.chapter_id === cid);
+  }
+
   if (filter === "custom_exam") {
 
     return state.customQs || [];
@@ -21621,6 +22414,13 @@ function getQuizSessionDisplayName(filter) {
 
   }
 
+    if (filter === "pred_top100") return "🏆 الـ 100 الأكثر احتمالية وتكراراً (امتحانات 2025 / 2026)";
+  if (filter === "pred_top500") return "🛡️ بنك الـ 500 سؤال — نطاق الأمان (امتحانات 2025 / 2026)";
+  if (filter === "pred_all1054" || filter === "pred_all") return "🌐 بنك جميع أسئلة امتحانات 2025 و 2026 (1,054 سؤال)";
+  if (filter && filter.startsWith("pred_chapter_")) {
+    const cid = filter.replace("pred_chapter_", "");
+    return "🎯 أسئلة 2025/2026 — " + getChapterTitle(cid);
+  }
   if (filter === "custom_exam") return state.customExamTitle || "Custom Study Session";
 
   if (filter === "wrong") return "الأسئلة الخاطئة (Incorrect Questions)";
@@ -21633,7 +22433,12 @@ function getQuizSessionDisplayName(filter) {
 
   if (filter === "discrepancy" || filter === "changed_answers") return "⚠️ الأسئلة المعدلة و Key Alerts";
 
-  if (filter === "my_solved_changed") return "🔄 الأسئلة التي حللتها سابقاً وتغيرت إجابتها";
+  if (filter === "my_solved_changed" ||
+    filter === "pred_top100" ||
+    filter === "pred_top500" ||
+    filter === "pred_all1054" ||
+    filter === "pred_all" ||
+    (typeof filter === "string" && filter.startsWith("pred_chapter_"))) return "🔄 الأسئلة التي حللتها سابقاً وتغيرت إجابتها";
 
   return "QBank Study Session";
 
@@ -21806,6 +22611,7 @@ function executeStartQuizSession(filter, qs, mode) {
   state.quizFilter = filter;
 
   state.activeQuizQs = qs.slice();
+  state.quizChapterFilter = null;
 
   if (filter === "custom_exam") {
 
@@ -21905,7 +22711,12 @@ function startQuiz(filter) {
 
     filter === "changed_answers" ||
 
-    filter === "my_solved_changed"
+    filter === "my_solved_changed" ||
+    filter === "pred_top100" ||
+    filter === "pred_top500" ||
+    filter === "pred_all1054" ||
+    filter === "pred_all" ||
+    (typeof filter === "string" && filter.startsWith("pred_chapter_"))
 
   );
 
@@ -22209,7 +23020,9 @@ function renderQuizPage(resetQTimer) {
 
     dotsContainer.innerHTML = "";
 
-    cardArea.innerHTML = `<div class="article-card"><p>No questions match this filter.</p><button class="btn-outline" onclick="navigateTo('home')">Back to Dashboard</button></div>`;
+    renderQuizChapterFilterBar(qs);
+
+  cardArea.innerHTML = `<div class="article-card"><p>No questions match this filter.</p><button class="btn-outline" onclick="navigateTo('home')">Back to Dashboard</button></div>`;
 
     return;
 
@@ -22252,7 +23065,10 @@ function renderQuizPage(resetQTimer) {
       else if (ist.status === "wrong") cls += " dot-wrong";
       if (ist.flagged) cls += " dot-flagged";
       const flagBadge = ist.flagged ? `<span class="dot-flag-badge" title="Flagged Question">🚩</span>` : "";
-      return `<button class="q-dot ${cls}" id="qdot-${idx}" onclick="jumpQuizIdx(${idx})" title="Question ${idx + 1}${ist.flagged ? ' (Flagged 🚩)' : ''}">${idx + 1}${flagBadge}</button>`;
+            const isFilteredOut = (state.quizChapterFilter && state.quizChapterFilter.length > 0 && !state.quizChapterFilter.includes(item.chapter_id));
+      if (isFilteredOut) cls += " dot-filtered-hidden";
+      const chapName = getChapterTitle(item.chapter_id);
+      return `<button class="q-dot ${cls}" id="qdot-${idx}" data-chap="${item.chapter_id || ''}" onclick="jumpQuizIdx(${idx})" title="سؤال ${idx + 1} • #${item.number} • ${chapName}${ist.flagged ? ' (Flagged 🚩)' : ''}">${idx + 1}${flagBadge}</button>`;
     }).join("");
   } else {
     const oldActive = dotsContainer.querySelector(".active-dot");
@@ -22493,6 +23309,8 @@ function renderQuizPage(resetQTimer) {
 
 
 
+  renderQuizChapterFilterBar(qs);
+
   cardArea.innerHTML = `
 
     <div class="quiz-card" data-qnum="${q.number}">
@@ -22503,7 +23321,7 @@ function renderQuizPage(resetQTimer) {
 
           <div class="qc-title-wrap">
 
-            <span class="qc-qnum-title">Question ${state.quizIndex + 1} of ${qs.length}</span>
+            <span class="qc-qnum-title">Question ${state.quizIndex + 1} of ${qs.length} <span class="qc-chapter-badge" style="color:var(--teal); font-weight:700; margin-right:4px;">• ${getChapterTitle(q.chapter_id)}</span>${q._predProb ? `<span class="qc-pred-badge" style="background:#0d9488; color:#fff; font-size:11px; padding:2px 7px; border-radius:10px; margin-right:6px; font-weight:700;" title="نسبة الاحتمالية المحسوبة">🎯 احتمالية ${q._predProb}%</span>` : ''}</span>
 
             ${isAdminAccount() ? `<span class="admin-amer-pill" title="رقم السؤال في مذكرة د. أحمد عامر (أدمن)">#${q.number}</span>` : ''}
 
@@ -22960,21 +23778,20 @@ function jumpQuizIdx(idx) {
 
 
 function stepQuiz(delta) {
-
   const qs = getQuestionsForFilter(state.quizFilter);
-
-  const next = state.quizIndex + delta;
-
-  if (next >= 0 && next < qs.length) {
-
-    state.quizIndex = next;
-
-    renderQuizPage(true);
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
+  if (!qs || qs.length === 0) return;
+  const selectedChaps = state.quizChapterFilter;
+  let next = state.quizIndex + delta;
+  if (selectedChaps && selectedChaps.length > 0) {
+    while (next >= 0 && next < qs.length && !selectedChaps.includes(qs[next].chapter_id)) {
+      next += (delta >= 0 ? 1 : -1);
+    }
   }
-
+  if (next >= 0 && next < qs.length) {
+    state.quizIndex = next;
+    renderQuizPage(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 }
 
 
