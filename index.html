@@ -14314,12 +14314,22 @@ function loadState() {
 
 
 let _cloudSyncTimer = null;
-
 let _hasPendingCloudSync = false;
-
-let _cloudSyncStatus = "local"; // "local" | "syncing" | "synced" | "error"
-
-
+let _cloudSyncStatus = "local"; // "local" | "syncing" | "synced" | "error" | "pending"
+let _dirtyQStatusKeys = Object.create(null);
+let _dirtyMeta = Object.create(null);
+let _cloudSyncInFlight = false;
+let _cloudSyncQueued = false;
+let _cloudSyncQueuedFull = false;
+let _cloudRetryAttempt = 0;
+let _cloudRetryTimer = null;
+let _successfulIncrementalSyncs = 0;
+let _persistDirtyTimer = null;
+const CLOUD_DIRTY_STORAGE_KEY = "emle_cloud_dirty_v1";
+const CLOUD_SYNC_DEBOUNCE_MS = 2800;
+const CLOUD_FULL_RECONCILE_EVERY = 25;
+const CLOUD_PAYLOAD_SOFT_LIMIT = 900000;
+const CLOUD_HISTORY_PRUNE_LEN = 3;
 
 function safeLocalStorageSet(key, value) {
   try {
@@ -14354,6 +14364,131 @@ function safeLocalStorageSet(key, value) {
   }
 }
 
+function markQStatusDirty(qnum) {
+  if (qnum === undefined || qnum === null || qnum === "") return;
+  _dirtyQStatusKeys[String(qnum)] = 1;
+  schedulePersistDirtyQueue();
+}
+
+function markMetaDirty(fields) {
+  const list = fields && fields.length
+    ? fields
+    : ["topicsRead", "streak", "eliminatedOpts", "peerVotedQs", "governorate"];
+  for (let i = 0; i < list.length; i++) _dirtyMeta[list[i]] = 1;
+  schedulePersistDirtyQueue();
+}
+
+function markAllProgressDirty() {
+  Object.keys(state.qStatus || {}).forEach(function(k) { _dirtyQStatusKeys[k] = 1; });
+  markMetaDirty();
+}
+
+function hasCloudDirty() {
+  if (Object.keys(_dirtyQStatusKeys).length > 0) return true;
+  return Object.keys(_dirtyMeta).length > 0;
+}
+
+function schedulePersistDirtyQueue() {
+  if (_persistDirtyTimer) return;
+  _persistDirtyTimer = setTimeout(function() {
+    _persistDirtyTimer = null;
+    persistDirtyQueue();
+  }, 150);
+}
+
+function persistDirtyQueue() {
+  try {
+    const payload = {
+      q: Object.keys(_dirtyQStatusKeys),
+      meta: Object.keys(_dirtyMeta),
+      pending: !!(hasCloudDirty() || _hasPendingCloudSync)
+    };
+    safeLocalStorageSet(CLOUD_DIRTY_STORAGE_KEY, JSON.stringify(payload));
+  } catch (e) {}
+}
+
+function restoreDirtyQueue() {
+  try {
+    const raw = localStorage.getItem(CLOUD_DIRTY_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed && Array.isArray(parsed.q)) {
+      parsed.q.forEach(function(k) { _dirtyQStatusKeys[String(k)] = 1; });
+    }
+    if (parsed && Array.isArray(parsed.meta)) {
+      parsed.meta.forEach(function(k) { _dirtyMeta[k] = 1; });
+    }
+    if (parsed && parsed.pending) _hasPendingCloudSync = true;
+  } catch (e) {}
+}
+
+function countAnsweredProgress(qStatus) {
+  const qs = qStatus || {};
+  let answered = 0;
+  Object.keys(qs).forEach(function(k) {
+    const st = qs[k];
+    if (st && typeof st.selected === "number" && st.status) answered++;
+  });
+  return answered;
+}
+
+function countProgressEntries(qStatus) {
+  return Object.keys(qStatus || {}).length;
+}
+
+function pruneQStatusForCloud(qStatus, historyLimit) {
+  const limit = typeof historyLimit === "number" ? historyLimit : CLOUD_HISTORY_PRUNE_LEN;
+  const out = {};
+  Object.keys(qStatus || {}).forEach(function(k) {
+    const st = qStatus[k];
+    if (!st || typeof st !== "object") {
+      out[k] = st;
+      return;
+    }
+    const copy = Object.assign({}, st);
+    if (Array.isArray(copy.history) && copy.history.length > limit) {
+      copy.history = copy.history.slice(-limit);
+    }
+    out[k] = copy;
+  });
+  return out;
+}
+
+function estimatePayloadBytes(payload) {
+  try {
+    return JSON.stringify(payload).length;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function scheduleCloudSync(forceFull) {
+  if (!currentUser || !fbDb) return;
+  _hasPendingCloudSync = true;
+  if (forceFull) _cloudSyncQueuedFull = true;
+  if (_cloudSyncStatus !== "syncing") updateSyncIndicator(hasCloudDirty() ? "pending" : "syncing");
+  clearTimeout(_cloudSyncTimer);
+  _cloudSyncTimer = setTimeout(function() {
+    syncProgressToCloud(!!_cloudSyncQueuedFull);
+  }, CLOUD_SYNC_DEBOUNCE_MS);
+  persistDirtyQueue();
+}
+
+function scheduleCloudRetry() {
+  if (_cloudRetryTimer) return;
+  if (typeof navigator !== "undefined" && navigator.onLine === false) return;
+  const delays = [2000, 5000, 15000, 30000];
+  const delay = delays[Math.min(_cloudRetryAttempt, delays.length - 1)];
+  _cloudRetryAttempt++;
+  updateSyncIndicator("pending");
+  _cloudRetryTimer = setTimeout(function() {
+    _cloudRetryTimer = null;
+    if (currentUser && fbDb && (hasCloudDirty() || _hasPendingCloudSync || _cloudSyncQueuedFull)) {
+      syncProgressToCloud(!!_cloudSyncQueuedFull);
+    }
+  }, delay);
+}
+
 let _saveStateTimer = null;
 
 function saveState(immediate = false) {
@@ -14368,6 +14503,12 @@ function saveState(immediate = false) {
       _doSaveState();
     }, 200);
   }
+}
+
+function saveProgressAfterQChange(qnum, immediate) {
+  markQStatusDirty(qnum);
+  markMetaDirty(["streak", "eliminatedOpts"]);
+  saveState(!!immediate);
 }
 
 function _doSaveState() {
@@ -14387,16 +14528,27 @@ function _doSaveState() {
   } catch (e) {}
 
   if (currentUser && fbDb) {
-    _hasPendingCloudSync = true;
-    updateSyncIndicator("syncing");
-    clearTimeout(_cloudSyncTimer);
-    _cloudSyncTimer = setTimeout(() => {
-      syncProgressToCloud();
-    }, 1200);
+    // Meta fields are small; mark them dirty whenever local progress is saved while signed in.
+    markMetaDirty();
+    if (hasCloudDirty() || _hasPendingCloudSync) {
+      scheduleCloudSync(false);
+    }
   }
 }
 
-window.addEventListener("beforeunload", () => _doSaveState());
+restoreDirtyQueue();
+
+window.addEventListener("beforeunload", () => {
+  _doSaveState();
+  persistDirtyQueue();
+});
+
+window.addEventListener("online", function() {
+  if (currentUser && fbDb && (hasCloudDirty() || _hasPendingCloudSync)) {
+    _cloudRetryAttempt = 0;
+    syncProgressToCloud(!!_cloudSyncQueuedFull);
+  }
+});
 
 
 
@@ -22576,6 +22728,9 @@ function archiveQuestionAttemptBeforeRetry(qnum) {
 
   }
 
+  markQStatusDirty(qnum);
+  markMetaDirty(["eliminatedOpts", "streak"]);
+
   return archived;
 
 }
@@ -23808,7 +23963,7 @@ function triggerHint(qnum) {
 
   }
 
-  saveState();
+  saveProgressAfterQChange(qnum);
 
   renderQuizPage(false);
 
@@ -23828,7 +23983,7 @@ function triggerFlag(qnum) {
 
   }
 
-  saveState();
+  saveProgressAfterQChange(qnum);
 
   renderQuizPage(false);
 
@@ -24092,7 +24247,7 @@ function revealQuizAnswer(qnum) {
 
   recordStudyActivity(true);
 
-  saveState();
+  saveProgressAfterQChange(qnum);
 
   checkAutoStopTimerOnAnswer();
 
@@ -24318,6 +24473,8 @@ function recordQuestionPeerVote(qnum, optIdx) {
 
     delete _qPeerStatsCache[qnum];
 
+    // Peer vote is best-effort analytics only — never flip main progress sync to error
+    markMetaDirty(["peerVotedQs"]);
     saveState();
 
     return true;
@@ -24564,7 +24721,7 @@ function selectQuizOption(qnum, optIdx) {
 
   recordQuestionPeerVote(qnum, optIdx);
 
-  saveState();
+  saveProgressAfterQChange(qnum);
 
   checkAutoStopTimerOnAnswer();
 
@@ -24582,7 +24739,7 @@ function retryQuestion(qnum) {
 
     state.attemptsDropdownOpen = false;
 
-    saveState();
+    saveProgressAfterQChange(qnum);
 
     renderQuizPage(true);
 
@@ -24953,6 +25110,8 @@ function updateSyncIndicator(status) {
 
     syncing: "sync-indicator-dot sync-dot-syncing",
 
+    pending: "sync-indicator-dot sync-dot-syncing",
+
     error: "sync-indicator-dot sync-dot-red",
 
     local: "sync-indicator-dot sync-dot-gray"
@@ -24966,6 +25125,8 @@ function updateSyncIndicator(status) {
     synced: "Cloud Synced & Saved",
 
     syncing: "Syncing with cloud...",
+
+    pending: "Saved locally — retrying cloud sync...",
 
     error: "Cloud sync paused (saved locally)",
 
@@ -24993,7 +25154,7 @@ function updateSyncIndicator(status) {
 
       badge.style.color = "#15803d";
 
-    } else if (status === "syncing") {
+    } else if (status === "syncing" || status === "pending") {
 
       badge.style.background = "#fffbeb";
 
@@ -25048,12 +25209,12 @@ function updateAuthTopBar() {
 
 
 async function syncProgressFromCloud(user) {
-  if (!user || !fbDb) return;
+  if (!user || !fbDb) return { localWinners: 0, uploaded: false };
   try {
     updateSyncIndicator("syncing");
     const docRef = fbDb.collection("users").doc(user.uid);
 
-    // 1. Prefer fresh cloud server snapshot to bypass stale IndexedDB browser cache
+    // Prefer fresh cloud server snapshot to bypass stale IndexedDB browser cache
     let snap;
     try {
       snap = await docRef.get({ source: "server" });
@@ -25063,13 +25224,16 @@ async function syncProgressFromCloud(user) {
 
     if (snap && snap.exists) {
       const data = snap.data() || {};
+      let localWinnerCount = 0;
 
       // 1. Merge topicsRead (Union of both)
       state.topicsRead = Object.assign({}, data.topicsRead || {}, state.topicsRead || {});
 
       // 2. Merge qStatus with intelligent conflict resolution (answeredAt & status aware)
       const cloudQs = data.qStatus || {};
-      const mergedQs = Object.assign({}, state.qStatus || {});
+      const localBefore = state.qStatus || {};
+      const mergedQs = Object.assign({}, localBefore);
+      const localOnlyKeys = Object.keys(localBefore).filter(function(k) { return !cloudQs[k]; });
 
       Object.keys(cloudQs).forEach(k => {
         const loc = mergedQs[k];
@@ -25086,7 +25250,6 @@ async function syncProgressFromCloud(user) {
           const locAnswered = typeof loc.selected === "number" && !!loc.status;
           const cldAnswered = typeof cld.selected === "number" && !!cld.status;
 
-          // Intelligently determine latest & best answer
           let winner;
           if (locAnswered && !cldAnswered) {
             winner = loc;
@@ -25098,6 +25261,11 @@ async function syncProgressFromCloud(user) {
             winner = cld;
           }
 
+          if (winner === loc) {
+            localWinnerCount++;
+            markQStatusDirty(k);
+          }
+
           const loser = (winner === loc) ? cld : loc;
           mergedQs[k] = Object.assign({}, loser, winner, {
             flagged: !!(loc.flagged || cld.flagged),
@@ -25106,6 +25274,12 @@ async function syncProgressFromCloud(user) {
           });
         }
       });
+
+      localOnlyKeys.forEach(function(k) {
+        localWinnerCount++;
+        markQStatusDirty(k);
+      });
+
       state.qStatus = mergedQs;
 
       // 3. Merge streak (highest streak & union of days)
@@ -25132,12 +25306,33 @@ async function syncProgressFromCloud(user) {
         state.peerVotedQs = Object.assign({}, data.peerVotedQs, state.peerVotedQs || {});
       }
 
-      // 5. Save locally
-      saveState(true);
+      markMetaDirty();
 
-      // 6. CRUCIAL TWO-WAY SYNC: Immediately upload merged progress back to cloud
-      // Guarantees all questions from all browsers are consolidated in cloud
-      await syncProgressToCloud(true);
+      // 5. Save locally without scheduling a full rewrite
+      invalidateStatsCache();
+      try {
+        safeLocalStorageSet(STORAGE_KEY, JSON.stringify({
+          governorate: state.governorate,
+          topicsRead: state.topicsRead,
+          qStatus: state.qStatus,
+          streak: state.streak,
+          eliminatedOpts: state.eliminatedOpts,
+          peerVotedQs: state.peerVotedQs,
+          studyPlanScope: state.studyPlanScope,
+          chapterOrder: state.chapterOrder,
+          darkMode: state.darkMode
+        }));
+      } catch (e) {}
+
+      // 6. Upload only when local side has winners / pending dirty keys
+      let uploaded = false;
+      if (localWinnerCount > 0 || hasCloudDirty() || _hasPendingCloudSync) {
+        uploaded = await syncProgressToCloud(localWinnerCount > 40);
+      } else {
+        _hasPendingCloudSync = false;
+        persistDirtyQueue();
+        updateSyncIndicator("synced");
+      }
 
       if (typeof navigateTo === "function" && state.currentView && DATA && Array.isArray(DATA.topics) && DATA.topics.length > 0) {
         navigateTo(state.currentView, state.currentTopicId);
@@ -25145,77 +25340,141 @@ async function syncProgressFromCloud(user) {
       if (typeof renderStreakWidget === "function") {
         renderStreakWidget();
       }
-      updateSyncIndicator("synced");
       showToast("Cloud progress loaded & synchronized successfully!");
+      return { localWinners: localWinnerCount, uploaded: uploaded };
     } else {
       // First time signing in on this account: push local progress to cloud
+      markAllProgressDirty();
       await syncProgressToCloud(true);
       if (state.currentView === "quiz" && typeof renderQuizPage === "function") {
         renderQuizPage(false);
       }
       showToast("Account linked & local progress uploaded to cloud!");
+      return { localWinners: countProgressEntries(state.qStatus), uploaded: true };
     }
   } catch (err) {
     console.error("Cloud fetch error:", err);
     updateSyncIndicator("error");
+    return { localWinners: 0, uploaded: false };
   }
 }
 
 
-async function syncProgressToCloud(isImmediate = false) {
+async function syncProgressToCloud(forceFull = false) {
+  if (!currentUser || !fbDb) return false;
 
-  if (!currentUser || !fbDb) return;
+  if (_cloudSyncInFlight) {
+    _cloudSyncQueued = true;
+    if (forceFull) _cloudSyncQueuedFull = true;
+    return false;
+  }
+
+  const wantFull = !!(forceFull || _cloudSyncQueuedFull ||
+    (_successfulIncrementalSyncs > 0 && (_successfulIncrementalSyncs % CLOUD_FULL_RECONCILE_EVERY === 0)));
+
+  if (!wantFull && !hasCloudDirty() && !_hasPendingCloudSync) {
+    updateSyncIndicator("synced");
+    return true;
+  }
+
+  _cloudSyncInFlight = true;
+  _cloudSyncQueued = false;
+  updateSyncIndicator("syncing");
+
+  const sentQKeys = wantFull ? Object.keys(state.qStatus || {}) : Object.keys(_dirtyQStatusKeys);
+  const sentMeta = wantFull
+    ? ["topicsRead", "streak", "eliminatedOpts", "peerVotedQs", "governorate"]
+    : Object.keys(_dirtyMeta);
 
   try {
-
-    _hasPendingCloudSync = false;
-
-    updateSyncIndicator("syncing");
-
-
-
     const docRef = fbDb.collection("users").doc(currentUser.uid);
+    let qStatusPayload = {};
+    if (wantFull) {
+      qStatusPayload = pruneQStatusForCloud(state.qStatus || {}, CLOUD_HISTORY_PRUNE_LEN);
+    } else {
+      sentQKeys.forEach(function(k) {
+        if (state.qStatus && state.qStatus[k] !== undefined) {
+          qStatusPayload[k] = state.qStatus[k];
+        }
+      });
+      qStatusPayload = pruneQStatusForCloud(qStatusPayload, CLOUD_HISTORY_PRUNE_LEN);
+    }
 
     const payload = {
-
-      topicsRead: state.topicsRead || {},
-
-      qStatus: state.qStatus || {},
-
-      streak: state.streak || {},
-
-      eliminatedOpts: state.eliminatedOpts || {},
-
-      peerVotedQs: state.peerVotedQs || {},
-
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-
       userEmail: currentUser.email || "",
-
-      governorate: state.governorate || "",
-
       displayName: currentUser.displayName || "",
-
       userAgent: navigator.userAgent.substring(0, 100)
-
     };
 
+    if (wantFull || sentQKeys.length) {
+      payload.qStatus = qStatusPayload;
+    }
+    if (wantFull || sentMeta.indexOf("topicsRead") !== -1) payload.topicsRead = state.topicsRead || {};
+    if (wantFull || sentMeta.indexOf("streak") !== -1) payload.streak = state.streak || {};
+    if (wantFull || sentMeta.indexOf("eliminatedOpts") !== -1) payload.eliminatedOpts = state.eliminatedOpts || {};
+    if (wantFull || sentMeta.indexOf("peerVotedQs") !== -1) payload.peerVotedQs = state.peerVotedQs || {};
+    if (wantFull || sentMeta.indexOf("governorate") !== -1) payload.governorate = state.governorate || "";
 
+    let bytes = estimatePayloadBytes(payload);
+    if (bytes > CLOUD_PAYLOAD_SOFT_LIMIT && payload.qStatus) {
+      payload.qStatus = pruneQStatusForCloud(payload.qStatus, 1);
+      bytes = estimatePayloadBytes(payload);
+    }
 
     await docRef.set(payload, { merge: true });
 
-    updateSyncIndicator("synced");
+    // Clear only keys/fields included in this write (keep anything dirtied during the await)
+    sentQKeys.forEach(function(k) { delete _dirtyQStatusKeys[k]; });
+    sentMeta.forEach(function(k) { delete _dirtyMeta[k]; });
+    if (wantFull) _cloudSyncQueuedFull = false;
 
+    _hasPendingCloudSync = hasCloudDirty() || _cloudSyncQueuedFull;
+    _cloudRetryAttempt = 0;
+    if (_cloudRetryTimer) {
+      clearTimeout(_cloudRetryTimer);
+      _cloudRetryTimer = null;
+    }
+    _successfulIncrementalSyncs++;
+    persistDirtyQueue();
+
+    if (_hasPendingCloudSync) {
+      updateSyncIndicator("pending");
+    } else {
+      updateSyncIndicator("synced");
+    }
+
+    _cloudSyncInFlight = false;
+    if (_cloudSyncQueued || _hasPendingCloudSync) {
+      _cloudSyncQueued = false;
+      const againFull = _cloudSyncQueuedFull;
+      setTimeout(function() { syncProgressToCloud(againFull); }, 50);
+    }
+    return true;
   } catch (err) {
-
     console.error("Cloud upload error:", err);
-
     _hasPendingCloudSync = true;
+    _cloudSyncInFlight = false;
+    persistDirtyQueue();
 
-    updateSyncIndicator("error");
+    const code = (err && err.code) || "";
+    const msg = String((err && err.message) || "");
+    if (code === "invalid-argument" || /exceeds|too big|size/i.test(msg)) {
+      updateSyncIndicator("error");
+      showToast("⚠️ Cloud save failed (progress too large). Your answers are safe locally — use Backup.");
+    } else if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      updateSyncIndicator("pending");
+    } else {
+      updateSyncIndicator("error");
+      scheduleCloudRetry();
+    }
 
+    if (_cloudSyncQueued) {
+      _cloudSyncQueued = false;
+      scheduleCloudRetry();
+    }
+    return false;
   }
-
 }
 
 
@@ -25582,18 +25841,24 @@ async function handleSignOut() {
 
 function exportLocalProgressBackup() {
   try {
+    const qStatus = state.qStatus || {};
+    const answered = countAnsweredProgress(qStatus);
+    const entries = countProgressEntries(qStatus);
     const backupData = {
       version: 1,
       appName: "EMLE in a Nutshell",
       exportedAt: new Date().toISOString(),
       userEmail: (currentUser && currentUser.email) || "guest",
+      answeredCount: answered,
+      entryCount: entries,
       topicsRead: state.topicsRead || {},
-      qStatus: state.qStatus || {},
+      qStatus: qStatus,
       streak: state.streak || {},
       eliminatedOpts: state.eliminatedOpts || {},
       peerVotedQs: state.peerVotedQs || {},
       studyPlanScope: state.studyPlanScope || "all",
-      chapterOrder: state.chapterOrder || []
+      chapterOrder: state.chapterOrder || [],
+      governorate: state.governorate || ""
     };
 
     const str = JSON.stringify(backupData, null, 2);
@@ -25602,12 +25867,12 @@ function exportLocalProgressBackup() {
     const a = document.createElement("a");
     const dateStr = new Date().toISOString().slice(0, 10);
     a.href = url;
-    a.download = "EMLE_VIP_Notes_Backup_" + dateStr + ".json";
+    a.download = "EMLE_VIP_Notes_Backup_" + answered + "q_" + dateStr + ".json";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast("💾 تم تنزيل النسخة الاحتياطية بنجاح!");
+    showToast("💾 Backup saved: " + answered + " answered (" + entries + " entries)");
   } catch (err) {
     console.error("Backup export failed:", err);
     showToast("تعذر تصدير النسخة الاحتياطية.");
@@ -25634,6 +25899,15 @@ function handleImportProgressFile(event) {
         throw new Error("Invalid backup file format");
       }
 
+      const beforeAnswered = countAnsweredProgress(state.qStatus);
+      const fileAnswered = typeof data.answeredCount === "number"
+        ? data.answeredCount
+        : countAnsweredProgress(data.qStatus || {});
+      let warnOlder = "";
+      if (fileAnswered < beforeAnswered) {
+        warnOlder = " ⚠️ File has fewer answered (" + fileAnswered + ") than current (" + beforeAnswered + ").";
+      }
+
       state.topicsRead = Object.assign({}, state.topicsRead || {}, data.topicsRead || {});
 
       const incomingQs = data.qStatus || {};
@@ -25643,6 +25917,7 @@ function handleImportProgressFile(event) {
         const inc = incomingQs[k];
         if (!loc) {
           mergedQs[k] = inc;
+          markQStatusDirty(k);
         } else {
           const locHist = Array.isArray(loc.history) ? loc.history : [];
           const incHist = Array.isArray(inc.history) ? inc.history : [];
@@ -25658,6 +25933,7 @@ function handleImportProgressFile(event) {
             hintUsed: !!(loc.hintUsed || inc.hintUsed),
             history: bestHist
           });
+          markQStatusDirty(k);
         }
       });
       state.qStatus = mergedQs;
@@ -25683,11 +25959,33 @@ function handleImportProgressFile(event) {
         state.peerVotedQs = Object.assign({}, state.peerVotedQs || {}, data.peerVotedQs);
       }
 
-      saveState(true);
+      markMetaDirty();
+      Object.keys(incomingQs).forEach(function(k) { markQStatusDirty(k); });
+
+      // Persist locally first (avoid schedule side-effects until dirty marks are set)
+      invalidateStatsCache();
+      try {
+        safeLocalStorageSet(STORAGE_KEY, JSON.stringify({
+          governorate: state.governorate,
+          topicsRead: state.topicsRead,
+          qStatus: state.qStatus,
+          streak: state.streak,
+          eliminatedOpts: state.eliminatedOpts,
+          peerVotedQs: state.peerVotedQs,
+          studyPlanScope: state.studyPlanScope,
+          chapterOrder: state.chapterOrder,
+          darkMode: state.darkMode
+        }));
+      } catch (e) {}
 
       if (currentUser && fbDb) {
         await syncProgressToCloud(true);
+      } else {
+        persistDirtyQueue();
       }
+
+      const afterAnswered = countAnsweredProgress(state.qStatus);
+      const afterEntries = countProgressEntries(state.qStatus);
 
       closeAuthModal();
       if (typeof navigateTo === "function" && state.currentView && DATA && Array.isArray(DATA.topics) && DATA.topics.length > 0) {
@@ -25696,7 +25994,7 @@ function handleImportProgressFile(event) {
       if (typeof renderStreakWidget === "function") {
         renderStreakWidget();
       }
-      showToast("✅ تم استعادة كافة التقدم والأسئلة بنجاح!");
+      showToast("✅ Restored " + fileAnswered + " from file → now " + afterAnswered + " answered (" + afterEntries + " entries)." + warnOlder);
     } catch (err) {
       console.error("Backup import failed:", err);
       alert("تعذر قراءة ملف النسخة الاحتياطية. يرجى التأكد من اختيار ملف JSON صحيح.");
@@ -25706,43 +26004,36 @@ function handleImportProgressFile(event) {
 }
 
 async function manualForceSync() {
-
-  if (currentUser) {
-
-    showToast("Syncing with cloud...");
-
+  if (!currentUser) return;
+  showToast("Syncing with cloud...");
+  // Upload local dirty/full first so newer local answers are not shadowed
+  if (hasCloudDirty() || _hasPendingCloudSync) {
     await syncProgressToCloud(true);
-
-    await syncProgressFromCloud(currentUser);
-
-    showToast("Cloud sync complete!");
-
+  } else {
+    await syncProgressToCloud(true);
   }
-
+  const mergeResult = await syncProgressFromCloud(currentUser);
+  if (mergeResult && mergeResult.localWinners > 0) {
+    await syncProgressToCloud(false);
+  }
+  showToast("Cloud sync complete!");
 }
 
-
-
-window.addEventListener("beforeunload", () => {
-
-  if (_hasPendingCloudSync && currentUser && fbDb) {
-
-    syncProgressToCloud(true);
-
+function flushProgressForBackground() {
+  try { _doSaveState(); } catch (e) {}
+  persistDirtyQueue();
+  if (currentUser && fbDb && (hasCloudDirty() || _hasPendingCloudSync || _cloudSyncQueuedFull)) {
+    // Fire without awaiting; mutex prevents overlap storms
+    syncProgressToCloud(!!_cloudSyncQueuedFull);
   }
+}
 
-});
-
-
+window.addEventListener("pagehide", flushProgressForBackground);
 
 document.addEventListener("visibilitychange", () => {
-
-  if (document.visibilityState === "hidden" && _hasPendingCloudSync && currentUser && fbDb) {
-
-    syncProgressToCloud(true);
-
+  if (document.visibilityState === "hidden") {
+    flushProgressForBackground();
   }
-
 });
 
 
